@@ -52,10 +52,31 @@
     {% endblock %}
   </head>
   <body class="invisible" style="--d: flex; --fd: column; --minh: 100vh">
-    <nav class="navbar row" style="--d: none; --d-md: flex; --ta: center">
+    <nav
+      class="navbar row"
+      style="--d: none; --d-md: flex; --ta: center; --jc: space-between"
+    >
       <h3 class="column">
         <img class="shadowed" src="/images/logo.jpg" style="--w: 200px" />
       </h3>
+      <div style="--pr: 1rem">
+        {% if session._user_id %}
+        <a href="/dashboard">⑈</a> - <a href="/free">Manage Your Space</a> - {%
+        else %} <a href="/">Home</a> - {% endif %}<!-- -->
+        <a href="/about">About</a> - <a href="/contact">Contact</a> - {#}only
+        show these links if the user is not logged in {#} {% if not
+        session._user_id %}
+        <a href="/register">Register and Setup Your Space</a> -
+        <a href="/login">Login</a>
+        {% endif %} {#} only show these links if the user is logged in {#} {% if
+        session._user_id %} {# only show if the user is not a pro user #} {% if
+        not current_user.account_type == "pro" %}
+        <a href="/upgrade"><button>Upgrade</button></a> - {% else %}
+        <a href="/pro_page">Configure Pro Pro-Features</a> - {% endif %} {# end
+        if #}
+        <a href="/logout" data-no-swup>Logout</a>
+        {% endif %}
+      </div>
     </nav>
     <nav role="navigation" style="--d: inherit; --d-md: none">
       <img class="shadowed" src="/images/logo.jpg" />
@@ -81,26 +102,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/scrollReveal.js/4.0.9/scrollreveal.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <nav>
-      {% if session._user_id %}
-      <a href="/dashboard">⑈</a> - <a href="/free_page">Manage Your Space</a> -
-      {% else %} <a href="/">Home</a> - {% endif %}<!-- -->
-      <a href="/about">About</a> - <a href="/contact">Contact</a> - {#}only show
-      these links if the user is not logged in {#} {% if not session._user_id %}
-      <a href="/register">Register and Setup Your Space</a> -
-      <a href="/login">Login</a>
-      {% endif %} {#} only show these links if the user is logged in {#} {% if
-      session._user_id %} {# only show if the user is not a pro user #} {% if
-      not current_user.account_type == "pro" %}
-      <a href="/upgrade"><button>Upgrade</button></a> - {% else %}
-      <a href="/pro_page">Configure Pro Pro-Features</a> - {% endif %} {# end if
-      #}
-      <a href="/logout" data-no-swup>Logout</a>
-      {% endif %}
-    </nav>
 
     {{ session._user_account_type }}
-    <main id="swup" class="transition-fade">
+    <main id="swup" class="transition-fade" style="--maxw-md: 72rem; --m: auto">
       {% block content %} {% endblock %}
     </main>
 

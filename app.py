@@ -106,7 +106,7 @@ def login():
 
         login_user(user)
 
-        return redirect(url_for('free_page', message="You have been logged in."))
+        return redirect(url_for('free', message="You have been logged in."))
     # Get message from query string
     message = request.args.get('message')
     return render_template('login.html', message=message)
@@ -135,7 +135,7 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
-        return redirect(url_for('free_page', message="You're now registered and logged in!"))
+        return redirect(url_for('free', message="You're now registered and logged in!"))
     message = request.args.get('message')
 
     return render_template('register.html', message=message)
@@ -194,10 +194,10 @@ def upgrade():
     return render_template('upgrade.html', client_secret=payment_intent.client_secret, stripe_publishable_key=os.getenv("STRIPE_PUBLISHABLE_KEY"))
 
 
-@app.route('/free_page', methods=['GET', 'POST'])
+@app.route('/free', methods=['GET', 'POST'])
 @check_message
 @login_required
-def free_page():
+def free():
     if request.method == 'POST':
         name = request.form.get('name')
         email = request.form.get('email')
@@ -218,9 +218,9 @@ def free_page():
             cv_filename = f"{email_filename}.{cv_sufix}"
             cv.save(os.path.join('uploads', cv_filename))
 
-        return swuped('Your application has been submitted.', link="/free_page?submit_new_CV.", message="Submit another application.")
+        return swuped('Your application has been submitted.', link="/free?submit_new_CV.", message="Submit another application.")
 
-    return render_template('free_page.html', message=request.args.get('message'))
+    return render_template('free.html', message=request.args.get('message'))
 
 
 @app.route('/pro_page')
