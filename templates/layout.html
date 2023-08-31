@@ -48,30 +48,53 @@
       });
     </script>
     <script src="https://js.stripe.com/v3/" data-swup-ignore-script></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
     {% endblock %}
   </head>
-  <body class="invisible" style="--d:flex; --fd: column; --minh: 100vh;">
-    {#<header>
-      <img
-        src="{{ url_for('static', filename='images/example.jpeg') }}"
-        alt="Example Image"
-        style="--w: 100%"
-      />
-    </header> #}
+  <body class="invisible" style="--d: flex; --fd: column; --minh: 100vh">
+    <nav class="navbar row" style="--d: none; --d-md: flex; --ta: center">
+      <h3 class="column">
+        <img class="shadowed" src="/images/logo.jpg" style="--w: 200px" />
+      </h3>
+    </nav>
+    <nav role="navigation" style="--d: inherit; --d-md: none">
+      <img class="shadowed" src="/images/logo.jpg" />
+      <div id="menuToggle">
+        {#hidden checkbox is used as click reciever, so you can use the :checked
+        selector on it.#}<input type="checkbox" /> {#Some spans to act as a
+        hamburger. They are acting like a real hamburger, not that McDonalds
+        stuff.#}<span></span><span></span><span></span>
+        <div id="menu">
+          <ul onclick="closeMenu()">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <li>
+              <a href="/register">
+                <button class="button is-info">Try it Free</button>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/scrollReveal.js/4.0.9/scrollreveal.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <nav>
       {% if session._user_id %}
-      <a href="/dashboard">⑈</a> - <a href="/free_page">Process CV</a> - {% else
-      %} <a href="/">Home</a> - {% endif %}<!-- -->
+      <a href="/dashboard">⑈</a> - <a href="/free_page">Manage Your Space</a> -
+      {% else %} <a href="/">Home</a> - {% endif %}<!-- -->
       <a href="/about">About</a> - <a href="/contact">Contact</a> - {#}only show
       these links if the user is not logged in {#} {% if not session._user_id %}
-      <a href="/register">Register</a> -
+      <a href="/register">Register and Setup Your Space</a> -
       <a href="/login">Login</a>
       {% endif %} {#} only show these links if the user is logged in {#} {% if
       session._user_id %} {# only show if the user is not a pro user #} {% if
       not current_user.account_type == "pro" %}
-      <a href="/upgrade">Upgrade</a> - {% else %}
-      <a href="/pro_page">Pro Page</a> - {% endif %} {# end if #}
+      <a href="/upgrade"><button>Upgrade</button></a> - {% else %}
+      <a href="/pro_page">Configure Pro Pro-Features</a> - {% endif %} {# end if
+      #}
       <a href="/logout" data-no-swup>Logout</a>
       {% endif %}
     </nav>
@@ -80,7 +103,8 @@
     <main id="swup" class="transition-fade">
       {% block content %} {% endblock %}
     </main>
-    <footer class="footer"  style="--mt: auto;">
+
+    <footer class="footer" style="--mt: auto">
       <div style="--d: flex; --jc: center; --fd: column">
         <div style="--ta: center; --mb: 1rem">
           <span></span>
@@ -96,15 +120,14 @@
               >our contributors</a
             >.
           </p>
-          <p style="--mb:0">
+          <p style="--mb: 0">
             Startr Style licensed
             <a
               href="https://github.com/Startr/WEB-flask/blob/master/LICENSE.md"
               target="_blank"
               rel="license noopener"
               >AGPL</a
-            >,
-             docs
+            >, docs
             <a
               href="https://creativecommons.org/licenses/by/3.0/"
               target="_blank"

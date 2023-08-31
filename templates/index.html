@@ -1,23 +1,90 @@
 {% extends "layout.html" %} {% block title %} Contact - Form {% endblock %}
 <!---->
 {% block content %}
-<h2>Submit your CV</h2>
-<p>Fill out the form below to submit your CV.</p>
 
-<form action="/free_page" method="POST" enctype="multipart/form-data">
-  <label for="name">Name:</label>
-  <input type="text" id="name" name="name" required />
-  <label for="email">Email:</label>
-  <input type="email" id="email" name="email" required />
-  <label for="job_description">Job Description:</label>
-  <input
-    for="job_description"
-    id="job_description"
-    name="job_description"
-    required
-  />
-  <label for="cv">CV (PDF or DOCX):</label>
-  <input type="file" id="cv" name="cv" accept=".pdf,.docx" required />
-  <input type="submit" value="Submit" />
-</form>
+<section
+  class="row wow animate__fadeIn"
+  id="home"
+  style="--d: flex;--fd:column; --fd-sm: row; --ai: center; --p: 2rem; --mb: 1rem"
+>
+  <div class="column" style="--ta: center; --d: grid; --fw: wrap">
+    <img src="/images/Frames.png" style="--ps: center" />
+  </div>
+  <div class="column" style="--p: 2rem; --w-md: 51%">
+    <h2 style="--mb: 1rem">
+      Online spaces that actually encourage people to be together
+    </h2>
+    <h3 style="--mb: 1rem">
+      A video chat platform that transforms how you work, play, teach and learn
+      online.
+    </h3>
+  </div>
+</section>
+<section
+  class="row wow animate__fadeIn"
+  id="about"
+  style="--d: flex; --jc: center; --fd: column; --fd-md: row; --fw: wrap"
+>
+  <div class="column" style="--m: auto; --ta: center; --d: grid; --maxw: 300px">
+    <img src="/images/1_Key_Icon.svg" style="--ps: center" />
+    <h3>No links or invitations to manage</h3>
+    <p>Get the key to your own, permanant virtual building!</p>
+  </div>
+  <div class="column" style="--m: auto; --ta: center; --d: grid; --maxw: 300px">
+    <img src="/images/2_Castle_Icon.svg" style="--ps: center" />
+    <h3>Interconnected rooms and spaces</h3>
+    <p>Create custom spaces and allow people to flow between them.</p>
+  </div>
+  <div class="column" style="--m: auto; --ta: center; --d: grid; --maxw: 300px">
+    <img src="/images/3_Apps_Icon.svg" style="--ps: center" />
+    <h3>Embedded content and apps</h3>
+    <p>Personalise rooms with whiteboards, books, videos and more.</p>
+  </div>
+</section>
+<section class="row wow animate__fadeIn">
+  <div
+    class="column"
+    style="--ta: center; --bgc: #3400ca; --c: white; --p: 1rem; --d: grid"
+  >
+    <p>
+      Can virtual experiences spark joy and creativity? At Startr we think so!
+    </p>
+    <h4>
+      <a href="/register"
+        ><button style="--p: 1rem 2rem; --mr: 1rem; --ps: center">
+          Get Started Today!
+        </button></a
+      >
+    </h4>
+  </div>
+</section>
+<section
+  class="row wow animate__fadeIn"
+  style="--d: inherit; --d-md: flex; --ai: center; --p: 2rem; --mb: 1rem"
+>
+  <div class="column" style="--ai: center; --ta: center; --d: grid; --fw: wrap">
+    <h2>Just what you need, right when you need it.</h2>
+  </div>
+</section>
+<section
+  class="row wow animate__fadeIn"
+  id="about"
+  style="--d: flex; --jc: center; --fd: column; --fd-md: row; --fw: wrap"
+>
+  <div class="column" style="--m: auto; --ta: center; --d: grid; --maxw: 300px">
+    <img src="/images/1_Key_Icon.svg" style="--ps: center" />
+    <h3>No links or invitations to manage</h3>
+    <p>Get the key to your own, permanant virtual building!</p>
+  </div>
+  <div class="column" style="--m: auto; --ta: center; --d: grid; --maxw: 300px">
+    <img src="/images/2_Castle_Icon.svg" style="--ps: center" />
+    <h3>Interconnected rooms and spaces</h3>
+    <p>Create custom spaces and allow people to flow between them.</p>
+  </div>
+  <div class="column" style="--m: auto; --ta: center; --d: grid; --maxw: 300px">
+    <img src="/images/3_Apps_Icon.svg" style="--ps: center" />
+    <h3>Embedded content and apps</h3>
+    <p>Personalise rooms with whiteboards, books, videos and more.</p>
+  </div>
+</section>
 {% endblock %}
