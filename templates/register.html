@@ -7,11 +7,17 @@ content %}
 {% endif %}
 <form method="POST" data-no-swup>
   <label for="email">Email</label>
-  <input type="email" id="email" name="email" required />
+  <input type="email" id="email" name="email" autocomplete="username" required />
   <label for="name">Name</label>
   <input type="text" id="name" name="name" required />
   <label for="password">Password</label>
-  <input type="password" id="password" name="password" required />
-  <input style="float: right; margin-right: 0;" type="submit" value="Register" />
+  <input
+    type="password"
+    id="password"
+    name="password"
+    autocomplete="new-password"
+    required
+  />
+  <input style="float: right; margin-right: 0" type="submit" value="Register" />
 </form>
 {% endblock %}

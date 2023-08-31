@@ -1,6 +1,7 @@
 {% extends "layout.html" %} {% block title %}Contact - Form{% endblock %} {%
 block content %}
-<h2>Submit your CV</h2>
+
+<h2>Setup your space and meet right away.</h2>
 
 <details>
   <summary>
@@ -8,26 +9,34 @@ block content %}
     <a href="/pro_page">Pro-Features for even more.</a>
   </summary>
   <ul>
-    <li>Upload multiple CVs a month.</li>
-    <li>Use the AI CV creation tool.</li>
-    <li>Chat with our AI CV assistant.</li>
+    <li>Your Startr Space will have more meeting rooms!</li>
+    <li>Customize your Startr Space with your teams colors and logo.</li>
+    <li>Enterprise accounts can have up to 1000 users.</li>
   </ul>
 </details>
 <form action="/free_page#submit" method="POST" enctype="multipart/form-data">
-  <label for="name">Name:</label>
-  <input type="text" id="name" name="name" required />
-  <label for="email">Email:</label>
-  <input type="email" id="email" name="email" required />
-  <label for="job_description">Job Description:</label>
+  <label for="space_name">Name Your Space:</label>
   <input
-    for="job_description"
-    id="job_description"
-    name="job_description"
+    type="text"
+    id="space_name"
+    name="space_name"
     required
+    pattern="(?=.*[a-z])(?=.*[A-Z]).{6,}"
+    required
+    autocomplete="organization"
+    title="Must contain one uppercase and lowercase letter, and at least 6 or more characters"
   />
-  <label for="cv">CV (PDF or DOCX):</label>
-  <input type="file" id="cv" name="cv" accept=".pdf,.docx" required />
-  <input style="float: right; margin-right: 0;" type="submit" value="Submit" />
+  <label for="space_pass">Set your space's password:</label>
+  <input
+    type="password"
+    id="space_pass"
+    name="space_pass"
+    required
+    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+    autocomplete="new-password"
+    title="Must contain at least one  number and one uppercase and lowercase letter, and at least 8 or more characters"
+  />
+  <input style="float: right; margin-right: 0" type="submit" value="Submit" />
 </form>
 
 {% endblock %}
