@@ -258,7 +258,7 @@ def free():
                         # create a password.txt file with the space_pass use the echo command
                         os.system('echo ' + space_pass + ' > static/sites/' + space_name + '/password.txt')
                         # TODO switch this for our staticrypyt site encryptor so we can encrypt the entire site
-                        return swuped('Your Space is being created.', link="/free?reset.", message="Manage your space.")
+        return swuped('Your Space is being created.', link="/free?reset.", message="Manage your space.")
     
     # Check if the user has a space_name in the csv file
     with open('contacts.csv', 'r') as file:
@@ -266,10 +266,10 @@ def free():
         for row in reader:
             if row[0] == current_user.email:
                 space_name = row[1]
-                # exit the for loop
-                break
+                return render_template('free.html', space_name=space_name, message=request.args.get('message'))
 
-    return render_template('free.html', space_name=space_name, message=request.args.get('message'))
+    # If they don't, return the default page
+    return render_template('free.html', message=request.args.get('message'))
 
 
 @app.route('/pro_page')
