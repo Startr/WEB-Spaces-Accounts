@@ -15,7 +15,10 @@ block content %}
   </ul>
 </details>
 <form action="/free#submit" method="POST" enctype="multipart/form-data">
-  <label for="space_name">Name Your Space:</label>
+  <label for="space_name">
+    {% if space_name %}<a href="{{space_name }}">{{space_name }}</a> is {% endif %}
+    Your Space's Name:
+  </label>
   <input
     type="text"
     id="space_name"
@@ -24,6 +27,7 @@ block content %}
     pattern="(?=.*[a-z])(?=.*[A-Z]).{6,}"
     required
     autocomplete="organization"
+    value="{{ space_name }}"
     title="Must contain one uppercase and lowercase letter, and at least 6 or more characters"
   />
   <label for="space_pass">Set your space's password:</label>

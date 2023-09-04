@@ -10,6 +10,7 @@ from functools import wraps
 import csv
 import os
 import re
+import logging
 import stripe
 
 config = {
@@ -52,7 +53,6 @@ with app.app_context():
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
 
 def check_message(f):
     @wraps(f)
@@ -193,34 +193,83 @@ def upgrade():
         )
     return render_template('upgrade.html', client_secret=payment_intent.client_secret, stripe_publishable_key=os.getenv("STRIPE_PUBLISHABLE_KEY"))
 
+# TODO: Add a way to cancel the subscription
 
 @app.route('/free', methods=['GET', 'POST'])
 @check_message
 @login_required
 def free():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        email = request.form.get('email')
-        job_description = request.form.get('job_description')
-        cv = request.files.get('cv')  # Changed to use get method
+    '''
+    This function allows the user to create a free space.
+    
+    The user will be able to create a space_name and space_pass.
 
-        if not name or not email:  # Check if name and email are provided
-            return redirect(url_for('index', message="Please provide both your name and email."))
+    TODO: Add automatic site archiving after 7 days
+    TODO: Add automatic site reminders after every 7 days, include the # of visitors
+
+    '''
+    if request.method == 'POST':
+        space_name = request.form.get('space_name')
+        space_pass = request.form.get('space_pass')
+
+        if not space_name or not space_pass:  # Check if both fields are filled in
+            return redirect(url_for('index', message="Please provide both your Space's Name and Space's Password."))
 
         with open('contacts.csv', 'a', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow([name, email, job_description])
+            writer.writerow([current_user.email, space_name, space_pass,"Today's date"])
+            # Run the site setup and make sure it's successful
+            # If it is, redirect to the new space
+            # In 7 days send an email to the user to remind them to upgrade
+            # Also in 7 days dissable the space and collect visitor #s 
+            # Email every week with # of visitors
 
-        if cv:
-            filename = secure_filename(cv.filename)
-            email_filename = re.sub(r'@', '_at_', email)
-            cv_sufix = filename.split('.')[-1]
-            cv_filename = f"{email_filename}.{cv_sufix}"
-            cv.save(os.path.join('uploads', cv_filename))
+            # If we don't have a local copy of the site, download it from https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.1.zip
+            if not os.path.exists('site'):
+                os.system('wget https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.1.zip')
+                os.system('unzip 0.0.1.zip')
+                os.system('mv WEB-Spaces-0.0.1 site')
+                os.system('rm 0.0.1.zip')
 
-        return swuped('Your application has been submitted.', link="/free?submit_new_CV.", message="Submit another application.")
+            # Create a new folder for the space and name it the space_name, esure that the parent folder exists
+            if not os.path.exists('sites'):
+                os.makedirs('static/sites')
 
-    return render_template('free.html', message=request.args.get('message'))
+            # Check the csv if the user already has a space of the same name
+            with open('contacts.csv', 'r') as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    if row[0] == current_user.email and row[1] == space_name:
+                        # If they do, update the password
+                        # The following is dummy code, it will need to be replaced with the actual code to update the password
+                        os.system('echo ' + space_pass + ' > static/sites/' + space_name + '/password.txt')
+                        logging.info('Updated password for ' + space_name)
+                        return swuped('Your Space has been updated.', link="/free?reset.", message="Manage your space.")
+                    
+                    # If they don't, check if there's an existing folder with the same name
+                    elif os.path.exists('static/sites/' + space_name):
+                        return redirect(url_for('free?existis', message="A Space with that name already exists. Please choose another name."))
+                    
+                    # If they don't, create a new folder with the space_name
+                    else:
+                        os.makedirs('static/sites/' + space_name)
+                        # copy the site/dist contents to the new folder
+                        os.system('cp -r site/dist/* static/sites/' + space_name)
+                        # create a password.txt file with the space_pass use the echo command
+                        os.system('echo ' + space_pass + ' > static/sites/' + space_name + '/password.txt')
+                        # TODO switch this for our staticrypyt site encryptor so we can encrypt the entire site
+                        return swuped('Your Space is being created.', link="/free?reset.", message="Manage your space.")
+    
+    # Check if the user has a space_name in the csv file
+    with open('contacts.csv', 'r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row[0] == current_user.email:
+                space_name = row[1]
+                # exit the for loop
+                break
+
+    return render_template('free.html', space_name=space_name, message=request.args.get('message'))
 
 
 @app.route('/pro_page')
