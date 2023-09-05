@@ -1,4 +1,5 @@
 from flask import Flask, flash, render_template, request, redirect, url_for
+from flask import send_from_directory, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 
@@ -60,7 +61,6 @@ def check_message(f):
         message = request.args.get('message')
         return f(*args, **kwargs)
     return decorated_function
-
 
 def swuped(content, link="/dashboard", message="Go to the dash"):
     """
@@ -226,13 +226,13 @@ def free():
 
             # If we don't have a local copy of the site, download it from https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.1.zip
             if not os.path.exists('site'):
-                os.system('wget https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.1.zip')
+                os.system('wget https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.2.zip')
                 os.system('unzip 0.0.1.zip')
                 os.system('mv WEB-Spaces-0.0.1 site')
                 os.system('rm 0.0.1.zip')
 
             # Create a new folder for the space and name it the space_name, esure that the parent folder exists
-            if not os.path.exists('sites'):
+            if not os.path.exists('static/sites'):
                 os.makedirs('static/sites')
 
             # Check the csv if the user already has a space of the same name
@@ -242,22 +242,25 @@ def free():
                     if row[0] == current_user.email and row[1] == space_name:
                         # If they do, update the password
                         # The following is dummy code, it will need to be replaced with the actual code to update the password
-                        os.system('echo ' + space_pass + ' > static/sites/' + space_name + '/password.txt')
+                        os.system('echo ' + space_pass + ' > sites/' + space_name + '/password.txt')
                         logging.info('Updated password for ' + space_name)
                         return swuped('Your Space has been updated.', link="/free?reset.", message="Manage your space.")
                     
                     # If they don't, check if there's an existing folder with the same name
-                    elif os.path.exists('static/sites/' + space_name):
+                    elif os.path.exists('sites/' + space_name):
                         return redirect(url_for('free?existis', message="A Space with that name already exists. Please choose another name."))
                     
-                    # If they don't, create a new folder with the space_name
-                    else:
-                        os.makedirs('static/sites/' + space_name)
-                        # copy the site/dist contents to the new folder
-                        os.system('cp -r site/dist/* static/sites/' + space_name)
-                        # create a password.txt file with the space_pass use the echo command
-                        os.system('echo ' + space_pass + ' > static/sites/' + space_name + '/password.txt')
-                        # TODO switch this for our staticrypyt site encryptor so we can encrypt the entire site
+
+            logging.info('making new folder for ' + space_name + ' in static/sites')
+            os.makedirs('sites/' + space_name)
+            logging.info('copy the site/dist contents to the new folder')
+            os.system('cp -r site/dist/* sites/' + space_name)
+            # create a password.txt file with the space_pass use the echo command
+            os.system('echo ' + space_pass + ' > sites/' + space_name + '/password.txt')
+            # TODO switch this for our staticrypyt site encryptor so we can encrypt the entire site
+            # Delete their old csv entry and keep the new one
+            os.system('sed -i "/' + current_user.email + '/d" contacts.csv')
+
         return swuped('Your Space is being created.', link="/free?reset.", message="Manage your space.")
     
     # Check if the user has a space_name in the csv file
@@ -266,7 +269,8 @@ def free():
         for row in reader:
             if row[0] == current_user.email:
                 space_name = row[1]
-                return render_template('free.html', space_name=space_name, message=request.args.get('message'))
+                space_pass = row[2]
+                return render_template('free.html', space_name=space_name, space_pass=space_pass, message=request.args.get('message'))
 
     # If they don't, return the default page
     return render_template('free.html', message=request.args.get('message'))
@@ -281,6 +285,15 @@ def pro_page():
 
     else:
         return redirect(url_for('upgrade'))
+    
+# Route to /sites/<space_name> to display the static sites
+@app.route('/sites/<path:path>')
+def send_site(path):
+    # if the path is a folder, add index.html to the end
+    if os.path.isdir('sites/' + path):
+        path += '/index.html'
+    return send_from_directory('sites/', path)
+
 
 
 if __name__ == '__main__':

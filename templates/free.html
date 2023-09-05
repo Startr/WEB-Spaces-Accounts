@@ -16,7 +16,7 @@ block content %}
 </details>
 <form action="/free#submit" method="POST" enctype="multipart/form-data">
   <label for="space_name">
-    {% if space_name %}<a href="{{space_name }}">{{space_name }}</a> is {% endif %}
+    {% if space_name %}<a href="/sites/{{space_name }}/">{{space_name }}</a> is {% endif %}
     Your Space's Name:
   </label>
   <input
@@ -37,7 +37,7 @@ block content %}
     name="space_pass"
     required
     pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-    autocomplete="new-password"
+    value="{{ space_pass }}"
     title="Must contain at least one  number and one uppercase and lowercase letter, and at least 8 or more characters"
   />
   <input style="float: right; margin-right: 0" type="submit" value="Submit" />
