@@ -12,6 +12,7 @@ import csv
 import os
 import re
 import logging
+
 import stripe
 
 config = {
@@ -27,7 +28,6 @@ app = Flask(__name__, static_url_path='')
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 app.config.from_mapping(config)
-
 
 
 db = SQLAlchemy(app)
@@ -55,12 +55,14 @@ with app.app_context():
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
 def check_message(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         message = request.args.get('message')
         return f(*args, **kwargs)
     return decorated_function
+
 
 def swuped(content, link="/dashboard", message="Go to the dash"):
     """
@@ -195,13 +197,14 @@ def upgrade():
 
 # TODO: Add a way to cancel the subscription
 
+
 @app.route('/free', methods=['GET', 'POST'])
 @check_message
 @login_required
 def free():
     '''
     This function allows the user to create a free space.
-    
+
     The user will be able to create a space_name and space_pass.
 
     TODO: Add automatic site archiving after 7 days
@@ -215,18 +218,20 @@ def free():
         if not space_name or not space_pass:  # Check if both fields are filled in
             return redirect(url_for('index', message="Please provide both your Space's Name and Space's Password."))
 
-        with open('contacts.csv', 'a', newline='') as file:
+        with open('sites.csv', 'a', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow([current_user.email, space_name, space_pass,"Today's date"])
+            writer.writerow([current_user.email, space_name,
+                            space_pass, "Today's date"])
             # Run the site setup and make sure it's successful
             # If it is, redirect to the new space
             # In 7 days send an email to the user to remind them to upgrade
-            # Also in 7 days dissable the space and collect visitor #s 
+            # Also in 7 days dissable the space and collect visitor #s
             # Email every week with # of visitors
 
             # If we don't have a local copy of the site, download it from https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.1.zip
             if not os.path.exists('site'):
-                os.system('wget https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.2.zip')
+                os.system(
+                    'wget https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.2.zip')
                 os.system('unzip 0.0.1.zip')
                 os.system('mv WEB-Spaces-0.0.1 site')
                 os.system('rm 0.0.1.zip')
@@ -236,35 +241,40 @@ def free():
                 os.makedirs('static/sites')
 
             # Check the csv if the user already has a space of the same name
-            with open('contacts.csv', 'r') as file:
+            with open('sites.csv', 'r') as file:
                 reader = csv.reader(file)
                 for row in reader:
                     if row[0] == current_user.email and row[1] == space_name:
                         # If they do, update the password
                         # The following is dummy code, it will need to be replaced with the actual code to update the password
-                        os.system('echo ' + space_pass + ' > sites/' + space_name + '/password.txt')
+                        os.system('echo ' + space_pass +
+                                  ' > sites/' + space_name + '/password.txt')
                         logging.info('Updated password for ' + space_name)
                         return swuped('Your Space has been updated.', link="/free?reset.", message="Manage your space.")
-                    
+
                     # If they don't, check if there's an existing folder with the same name
                     elif os.path.exists('sites/' + space_name):
                         return redirect(url_for('free?existis', message="A Space with that name already exists. Please choose another name."))
-                    
 
-            logging.info('making new folder for ' + space_name + ' in static/sites')
+            logging.info('making new folder for ' +
+                         space_name + ' in static/sites')
             os.makedirs('sites/' + space_name)
             logging.info('copy the site/dist contents to the new folder')
             os.system('cp -r site/dist/* sites/' + space_name)
             # create a password.txt file with the space_pass use the echo command
-            os.system('echo ' + space_pass + ' > sites/' + space_name + '/password.txt')
-            # TODO switch this for our staticrypyt site encryptor so we can encrypt the entire site
+            os.system('echo ' + space_pass + ' > sites/' +
+                      space_name + '/password.txt')
+            # TODO switch this for our staticrypyt site encryptor 
+            # so we can encrypt the entire site
             # Delete their old csv entry and keep the new one
-            os.system('sed -i "/' + current_user.email + '/d" contacts.csv')
+            os.system('sed -i "/' + current_user.email + '/d" sites.csv')
+            # Delete the old folder
+            os.system('rm -rf sites/' + space_name)
 
         return swuped('Your Space is being created.', link="/free?reset.", message="Manage your space.")
-    
+
     # Check if the user has a space_name in the csv file
-    with open('contacts.csv', 'r') as file:
+    with open('sites.csv', 'r') as file:
         reader = csv.reader(file)
         for row in reader:
             if row[0] == current_user.email:
@@ -275,6 +285,29 @@ def free():
     # If they don't, return the default page
     return render_template('free.html', message=request.args.get('message'))
 
+def site_builder():
+    ''' 
+    Checks the sites.csv file for new spaces and builds them.
+    Checks the sites/ folder for sites that are not in sites.csv and deletes them.
+    '''
+    #empty the sites/ folder
+    os.system('rm -rf sites/*')
+    # Check the csv file for new spaces
+    with open('sites.csv', 'r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if not os.path.exists('sites/' + row[1]):
+                # If the folder doesn't exist, create it
+                os.makedirs('sites/' + row[1])
+                # Copy the site/dist contents to the new folder
+                os.system('cp -r site/dist/* sites/' + row[1])
+                # create a password.txt file with the space_pass use the echo command
+                os.system('echo ' + row[2] + ' > sites/' +
+                          row[1] + '/password.txt')
+                # TODO switch this for our staticrypyt site encryptor 
+                # so we can encrypt the entire site
+
+        
 
 @app.route('/pro_page')
 @check_message
@@ -285,8 +318,10 @@ def pro_page():
 
     else:
         return redirect(url_for('upgrade'))
-    
+
 # Route to /sites/<space_name> to display the static sites
+
+
 @app.route('/sites/<path:path>')
 def send_site(path):
     # if the path is a folder, add index.html to the end
@@ -295,8 +330,9 @@ def send_site(path):
     return send_from_directory('sites/', path)
 
 
-
 if __name__ == '__main__':
+    # run the site_builder on launch to make sure we have a clean sites/ folder
+    site_builder()
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.run(host='0.0.0.0', port=8000)
