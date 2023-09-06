@@ -18,7 +18,7 @@ A simple yet powerful web application built with Flask and sprinkled with love..
 
 ## Introduction
 
-Welcome to WEB-Flask, a fantastic web application that will elevate your development experience. This project, powered by Flask, offers an array of features to make your web development journey smooth and delightful.
+Welcome to Startr Spaces Web Accounts. This is a simple yet powerful members only application built with Startr/WEB-Flask. It is a great starting point for building communities with Python and Flask.
 
 ### Getting Started
 
