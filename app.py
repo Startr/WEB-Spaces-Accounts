@@ -198,15 +198,66 @@ def upgrade():
 # TODO: Add a way to cancel the subscription
 
 
+# Function to download and extract site files
+def download_and_extract_site():
+    if not os.path.exists('site'):
+        site_url = 'https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.2.zip'
+        response = requests.get(site_url)
+        if response.status_code == 200:
+            with open('0.0.2.zip', 'wb') as zip_file:
+                zip_file.write(response.content)
+            os.system('unzip 0.0.2.zip')
+            os.system('mv WEB-Spaces-0.0.2 site')
+            os.remove('0.0.2.zip')
+
+# Function to setup the new space
+def setup_space(space_name):
+    space_folder_path = f'sites/{space_name}'
+
+    if not os.path.exists(space_folder_path):
+        os.makedirs(space_folder_path)
+        logging.info(f'Created folder for {space_name} in static/sites')
+        os.system(f'cp -r site/dist/* {space_folder_path}')
+        logging.info(f'Copied site/dist contents to {space_folder_path}')
+    else:
+        logging.warning(f'Space {space_name} already exists')
+        return redirect(url_for('free?exists', message="A Space with that name already exists. Please choose another name."))
+
+# Delete a space
+def delete_space(space_name):
+    space_folder_path = f'sites/{space_name}'
+    if os.path.exists(space_folder_path):
+        os.system(f'rm -rf {space_folder_path}')
+        logging.info(f'Deleted folder for {space_name} in static/sites')
+    else:
+        logging.warning(f'Space {space_name} does not exist')
+        return redirect(url_for('free?nospace', message="A Space with that name does not exist."))
+
+
+# Function to update the password for a space using npx staticrypt
+def update_space_password(space_name, space_pass):
+    # This uses staticrypt to update a fresh instance of a site
+    # TODO keep a backup of the old index so we can do it again
+    # For now delete space and recreate it
+    delete_space(space_name)
+    setup_space(space_name)
+    # Run staticrypt to encrypt the site
+    command = (
+        f'npx staticrypt sites/{space_name}/index.html -d sites/{space_name} '
+        f'-p "{space_pass}" --short -t site/password_template.html'
+    )
+    os.system(command)
+    logging.info(f'Updated password for {space_name} using staticrypt')
+
+def unix_timestamp():
+    import time
+    return str(int(time.time()))
+
 @app.route('/free', methods=['GET', 'POST'])
 @check_message
 @login_required
 def free():
     '''
-    This function allows the user to create a free space.
-
-    The user will be able to create a space_name and space_pass.
-
     TODO: Add automatic site archiving after 7 days
     TODO: Add automatic site reminders after every 7 days, include the # of visitors
 
@@ -216,81 +267,80 @@ def free():
         space_pass = request.form.get('space_pass')
 
         if not space_name or not space_pass:  # Check if both fields are filled in
-            return redirect(url_for('index', message="Please provide both your Space's Name and Space's Password."))
+            return redirect(url_for('free', message="Please provide both your Space's Name and Space's Password."))
+
+        data = []
+        with open('sites.csv', 'r') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                data.append(row)
+
+        for idx, row in enumerate(data):
+            if row[0] == current_user.email and row[1] == space_name:
+                # Write new password to csv file in the same row
+                data[idx][2] = space_pass
+                # Write the new csv file
+                with open('sites.csv', 'w') as file:
+                    #append the new row
+                    writer = csv.writer(file)
+                    writer.writerows(data)
+                    
+                # update the password using staticrypt
+                update_space_password(space_name, space_pass)
+
+                return swuped('Your Space has been updated.', link="/free?reset.", message="Manage your space.")
+            
+            elif row[0] != current_user.email and row[1] == space_name:
+                    return redirect(url_for('free', message="A Space with that name already exists. Please choose another name."))
+            
+            elif row[0] == current_user.email and row[1] != space_name:
+                # delete the old space and update the csv file to not include it
+                delete_space(row[1])
+                data.pop(idx)
+                with open('sites.csv', 'w') as file:
+                    writer = csv.writer(file)
+                    writer.writerows(data)
 
         with open('sites.csv', 'a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([current_user.email, space_name,
                             space_pass, "Today's date"])
-            # Run the site setup and make sure it's successful
-            # If it is, redirect to the new space
-            # In 7 days send an email to the user to remind them to upgrade
-            # Also in 7 days dissable the space and collect visitor #s
-            # Email every week with # of visitors
 
-            # If we don't have a local copy of the site, download it from https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.1.zip
-            if not os.path.exists('site'):
-                os.system(
-                    'wget https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.2.zip')
-                os.system('unzip 0.0.1.zip')
-                os.system('mv WEB-Spaces-0.0.1 site')
-                os.system('rm 0.0.1.zip')
+            # TODO In 7 days send an email to the user to remind them to upgrade
+            # TODO Also in 7 days dissable the space and collect visitor #s
+            # TODO Email every week with # of visitors
 
-            # Create a new folder for the space and name it the space_name, esure that the parent folder exists
-            if not os.path.exists('static/sites'):
-                os.makedirs('static/sites')
+            download_and_extract_site()
+            setup_space(space_name)
+            update_space_password(space_name, space_pass)
 
-            # Check the csv if the user already has a space of the same name
-            with open('sites.csv', 'r') as file:
-                reader = csv.reader(file)
-                for row in reader:
-                    if row[0] == current_user.email and row[1] == space_name:
-                        # If they do, update the password
-                        # The following is dummy code, it will need to be replaced with the actual code to update the password
-                        os.system('echo ' + space_pass +
-                                  ' > sites/' + space_name + '/password.txt')
-                        logging.info('Updated password for ' + space_name)
-                        return swuped('Your Space has been updated.', link="/free?reset.", message="Manage your space.")
+            now = unix_timestamp()
 
-                    # If they don't, check if there's an existing folder with the same name
-                    elif os.path.exists('sites/' + space_name):
-                        return redirect(url_for('free?existis', message="A Space with that name already exists. Please choose another name."))
-
-            logging.info('making new folder for ' +
-                         space_name + ' in static/sites')
-            os.makedirs('sites/' + space_name)
-            logging.info('copy the site/dist contents to the new folder')
-            os.system('cp -r site/dist/* sites/' + space_name)
-            # create a password.txt file with the space_pass use the echo command
-            os.system('echo ' + space_pass + ' > sites/' +
-                      space_name + '/password.txt')
-            # TODO switch this for our staticrypyt site encryptor 
-            # so we can encrypt the entire site
-            # Delete their old csv entry and keep the new one
-            os.system('sed -i "/' + current_user.email + '/d" sites.csv')
-            # Delete the old folder
-            os.system('rm -rf sites/' + space_name)
-
-        return swuped('Your Space is being created.', link="/free?reset.", message="Manage your space.")
+        return swuped('Setting up your space...', link="/free?now=" + now , message="Manage your space.")
 
     # Check if the user has a space_name in the csv file
+    # If they do return the space_name and space_pass
     with open('sites.csv', 'r') as file:
         reader = csv.reader(file)
         for row in reader:
             if row[0] == current_user.email:
                 space_name = row[1]
                 space_pass = row[2]
-                return render_template('free.html', space_name=space_name, space_pass=space_pass, message=request.args.get('message'))
+                return render_template('free.html',
+                                       space_name=space_name,
+                                       space_pass=space_pass,
+                                       message=request.args.get('message'))
 
     # If they don't, return the default page
     return render_template('free.html', message=request.args.get('message'))
+
 
 def site_builder():
     ''' 
     Checks the sites.csv file for new spaces and builds them.
     Checks the sites/ folder for sites that are not in sites.csv and deletes them.
     '''
-    #empty the sites/ folder
+    # empty the sites/ folder
     os.system('rm -rf sites/*')
     # Check the csv file for new spaces
     with open('sites.csv', 'r') as file:
@@ -304,10 +354,9 @@ def site_builder():
                 # create a password.txt file with the space_pass use the echo command
                 os.system('echo ' + row[2] + ' > sites/' +
                           row[1] + '/password.txt')
-                # TODO switch this for our staticrypyt site encryptor 
+                # TODO switch this for our staticrypyt site encryptor
                 # so we can encrypt the entire site
 
-        
 
 @app.route('/pro_page')
 @check_message
