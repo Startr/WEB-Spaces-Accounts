@@ -1,16 +1,18 @@
 ![alt text](https://source.unsplash.com/random/901x200/?nature*bw "Startr Web App")
 
-# Your Startr Web App
+# Startr Spaces Web Accounts  -  Built with Startr/WEB-Flask
 
-v0.2.0
+v0.0.1
 
-# WEB-Flask: less than 256 Lines of Python Goodness 🚀
+# Startr Spaces Web Accounts
 
-With Startr/WEB-Flast you can turn your ideas into a solid Minimal Viable Product in less than a weekend. 
+Build with Startr/WEB-Flask
+
+Building with Startr/WEB-Flask you can turn your ideas into a solid Minimal Viable Product in less than a weekend.
 
 With a little Python code you can tweak our micro framework to do anything.
 
-A simple yet powerful web application built with Flask and sprinkled with love... 
+A simple yet powerful web application built with Flask and sprinkled with love... and a little magic ✨
 
 🌟🌟🌟 Please **fork** and leave a ⭐ star if you find this repo useful. Thank you! 🌟🌟🌟
 
