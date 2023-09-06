@@ -318,21 +318,25 @@ def free():
 
         return swuped('Setting up your space...', link="/free?now=" + now , message="Manage your space.")
 
-    # Check if the user has a space_name in the csv file
-    # If they do return the space_name and space_pass
-    with open('sites.csv', 'r') as file:
-        reader = csv.reader(file)
-        for row in reader:
-            if row[0] == current_user.email:
-                space_name = row[1]
-                space_pass = row[2]
-                return render_template('free.html',
-                                       space_name=space_name,
-                                       space_pass=space_pass,
-                                       message=request.args.get('message'))
+    elif request.method == 'GET':
+        # Check if the user has a space_name in the csv file
+        # If they do return the space_name and space_pass
+        with open('sites.csv', 'r') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                if row[0] == current_user.email:
+                    space_name = row[1]
+                    space_pass = row[2]
+                    return render_template('free.html',
+                                        space_name=space_name,
+                                        space_pass=space_pass,
+                                        message=request.args.get('message'))
 
-    # If they don't, return the default page
-    return render_template('free.html', message=request.args.get('message'))
+        # If they don't, return the default page
+        return render_template('free.html', message=request.args.get('message'))
+    
+    else:
+        return redirect(url_for('free', message="Something went wrong."))
 
 
 def site_builder():
@@ -369,8 +373,6 @@ def pro_page():
         return redirect(url_for('upgrade'))
 
 # Route to /sites/<space_name> to display the static sites
-
-
 @app.route('/sites/<path:path>')
 def send_site(path):
     # if the path is a folder, add index.html to the end
