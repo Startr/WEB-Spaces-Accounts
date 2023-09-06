@@ -57,7 +57,7 @@
       style="--d: none; --d-md: flex; --ta: center; --jc: space-between"
     >
       <h3 class="column">
-        <img class="shadowed" src="/images/logo.jpg" style="--w: 200px" />
+        <a href="/"><img class="shadowed" src="/images/logo.jpg" style="--w: 200px" /></a>
       </h3>
       <div style="--pr: 1rem">
         {% if session._user_id %}
@@ -66,7 +66,7 @@
         <a href="/about">About</a> - <a href="/contact">Contact</a> - {#}only
         show these links if the user is not logged in {#} {% if not
         session._user_id %}
-        <a href="/register">Register and Setup Your Space</a> -
+        <a href="/register"><button>Register and Setup Your Space</button></a> -
         <a href="/login">Login</a>
         {% endif %} {#} only show these links if the user is logged in {#} {% if
         session._user_id %} {# only show if the user is not a pro user #} {% if
@@ -79,7 +79,7 @@
       </div>
     </nav>
     <nav role="navigation" style="--d: inherit; --d-md: none">
-      <img class="shadowed" src="/images/logo.jpg" />
+      <a href="/"><img class="shadowed" src="/images/logo.jpg" /></a>
       <div id="menuToggle">
         {#hidden checkbox is used as click reciever, so you can use the :checked
         selector on it.#}<input type="checkbox" /> {#Some spans to act as a
