@@ -306,15 +306,15 @@ def free():
             writer.writerow([current_user.email, space_name,
                             space_pass, "Today's date"])
 
-            # TODO In 7 days send an email to the user to remind them to upgrade
-            # TODO Also in 7 days dissable the space and collect visitor #s
-            # TODO Email every week with # of visitors
+        # TODO In 7 days send an email to the user to remind them to upgrade
+        # TODO Also in 7 days dissable the space and collect visitor #s
+        # TODO Email every week with # of visitors
 
-            download_and_extract_site()
-            setup_space(space_name)
-            update_space_password(space_name, space_pass)
+        download_and_extract_site()
+        setup_space(space_name)
+        update_space_password(space_name, space_pass)
 
-            now = unix_timestamp()
+        now = unix_timestamp()
 
         return swuped('Setting up your space...', link="/free?now=" + now , message="Manage your space.")
 
@@ -359,7 +359,7 @@ def site_builder():
                 os.system('echo ' + row[2] + ' > sites/' +
                           row[1] + '/password.txt')
                 # TODO switch this for our staticrypyt site encryptor
-                # so we can encrypt the entire site
+                # update_space_password(space_name, space_pass)
 
 
 @app.route('/pro_page')
