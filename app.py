@@ -12,6 +12,7 @@ import csv
 import os
 import re
 import logging
+import requests # for downloading the site
 
 import stripe
 
@@ -197,7 +198,7 @@ def upgrade():
 # TODO: Add a way to cancel the subscription
 
 
-# Function to download and extract site files
+# Function to download and extract site files if we don't already have them
 def download_and_extract_site():
     if not os.path.exists('site'):
         site_url = 'https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.2.zip'
@@ -210,6 +211,8 @@ def download_and_extract_site():
             os.remove('0.0.2.zip')
 
 # Function to setup the new space
+
+
 def setup_space(space_name):
     space_folder_path = f'sites/{space_name}'
 
@@ -223,6 +226,8 @@ def setup_space(space_name):
         return redirect(url_for('free?exists', message="A Space with that name already exists. Please choose another name."))
 
 # Delete a space
+
+
 def delete_space(space_name):
     space_folder_path = f'sites/{space_name}'
     if os.path.exists(space_folder_path):
@@ -248,9 +253,11 @@ def update_space_password(space_name, space_pass):
     os.system(command)
     logging.info(f'Updated password for {space_name} using staticrypt')
 
+
 def unix_timestamp():
     import time
     return str(int(time.time()))
+
 
 @app.route('/free', methods=['GET', 'POST'])
 @check_message
@@ -280,18 +287,18 @@ def free():
                 data[idx][2] = space_pass
                 # Write the new csv file
                 with open('sites.csv', 'w') as file:
-                    #append the new row
+                    # append the new row
                     writer = csv.writer(file)
                     writer.writerows(data)
-                    
+
                 # update the password using staticrypt
                 update_space_password(space_name, space_pass)
 
                 return swuped('Your Space has been updated.', link="/free?reset.", message="Manage your space.")
-            
+
             elif row[0] != current_user.email and row[1] == space_name:
-                    return redirect(url_for('free', message="A Space with that name already exists. Please choose another name."))
-            
+                return redirect(url_for('free', message="A Space with that name already exists. Please choose another name."))
+
             elif row[0] == current_user.email and row[1] != space_name:
                 # delete the old space and update the csv file to not include it
                 delete_space(row[1])
@@ -315,7 +322,7 @@ def free():
 
         now = unix_timestamp()
 
-        return swuped('Setting up your space...', link="/free?now=" + now , message="Manage your space.")
+        return swuped('Setting up your space...', link="/free?now=" + now, message="Manage your space.")
 
     elif request.method == 'GET':
         # Check if the user has a space_name in the csv file
@@ -327,13 +334,13 @@ def free():
                     space_name = row[1]
                     space_pass = row[2]
                     return render_template('free.html',
-                                        space_name=space_name,
-                                        space_pass=space_pass,
-                                        message=request.args.get('message'))
+                                           space_name=space_name,
+                                           space_pass=space_pass,
+                                           message=request.args.get('message'))
 
         # If they don't, return the default page
         return render_template('free.html', message=request.args.get('message'))
-    
+
     else:
         return redirect(url_for('free', message="Something went wrong."))
 
@@ -372,6 +379,8 @@ def pro_page():
         return redirect(url_for('upgrade'))
 
 # Route to /sites/<space_name> to display the static sites
+
+
 @app.route('/sites/<path:path>')
 def send_site(path):
     # if the path is a folder, add index.html to the end
