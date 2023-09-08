@@ -1,6 +1,8 @@
 # start by pulling the python image
 FROM python:3.9-alpine
 
+RUN apk add --update nodejs npx
+
 # copy the requirements file into the image
 COPY ./requirements.txt /app/requirements.txt
 
