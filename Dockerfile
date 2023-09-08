@@ -2,8 +2,7 @@
 FROM python:3.9-alpine
 
 RUN apk add --update npm
-RUN npm install -g npm@latest
-RUN npm install -g @npx
+RUN npm install -g npx
 
 # copy the requirements file into the image
 COPY ./requirements.txt /app/requirements.txt
