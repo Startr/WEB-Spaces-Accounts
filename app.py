@@ -20,12 +20,11 @@ config = {
     "SQLALCHEMY_DATABASE_URI": "sqlite:////tmp/test.db"  # connect to database
 }
 
-
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
-
 app = Flask(__name__, static_url_path='')
 
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
+
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 app.config.from_mapping(config)
 

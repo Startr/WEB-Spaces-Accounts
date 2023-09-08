@@ -122,9 +122,13 @@ permanent location.
 Use Docker to deploy this application. The included `Dockerfile` will build an image
 with the application and all dependencies installed.
 
+We also include a `captain-definition` file for use with [Caprover](https://caprover.com/). This
+file will automatically deploy the application to your Caprover instance.
+
+**Note:** You will need to set the environment variables in your Caprover instance.
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss
 what you would like to change.
-
 
