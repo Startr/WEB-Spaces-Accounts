@@ -4,8 +4,9 @@ FROM python:3.9-alpine
 RUN apk add --update npm
 RUN npm install -g npx
 
-# copy the requirements file into the image
-COPY ./requirements.txt /app/requirements.txt
+# copy the Pipfile and Pipfile.lock from the local file to the image
+COPY ./Pipfile /app/Pipfile
+COPY ./Pipfile.lock /app/Pipfile.lock
 
 # switch working directory
 WORKDIR /app
