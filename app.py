@@ -257,7 +257,7 @@ def update_space_password(space_name, space_pass):
     setup_space(space_name)
     # Run staticrypt to encrypt the site
     command = (
-        f'npx staticrypt sites/{space_name}/index.html -d sites/{space_name} '
+        f'npm exec -- staticrypt sites/{space_name}/index.html -d sites/{space_name} '
         f'-p "{space_pass}" --short -t site/password_template.html'
     )
     os.system(command)
