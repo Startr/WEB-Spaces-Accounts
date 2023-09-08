@@ -20,10 +20,7 @@ RUN pipenv install
 # copy every content from the local file to the image
 COPY . /app
 
-# configure the container to run in an executed manner
-# 
-ENTRYPOINT [ "pipenv run python" ]
-
 EXPOSE 8000
 
-CMD ["app.py" ]
+# Run our CMD within the virtual environment
+CMD ["pipenv", "run", "python", "app.py"]
