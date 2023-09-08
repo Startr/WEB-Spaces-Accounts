@@ -8,6 +8,9 @@ RUN npm install -g npx
 COPY ./Pipfile /app/Pipfile
 COPY ./Pipfile.lock /app/Pipfile.lock
 
+# install pipenv
+RUN pip install pipenv
+
 # switch working directory
 WORKDIR /app
 
