@@ -21,7 +21,8 @@ RUN pipenv install
 COPY . /app
 
 # configure the container to run in an executed manner
-ENTRYPOINT [ "python" ]
+# 
+ENTRYPOINT [ "pipenv run python" ]
 
 EXPOSE 8000
 
