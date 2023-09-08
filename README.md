@@ -24,8 +24,13 @@ Welcome to Startr Spaces Web Accounts. This is a simple yet powerful members onl
 
 To begin, make sure you have Python installed on your machine. Clone this repository and navigate to the project directory in your terminal. Then, follow these steps:
 
-1. Install the required dependencies by running `pip install -r requirements.txt`.
-2. Run the app locally using `python app.py`. The application will be accessible at `http://localhost:8000` during development.
+Note: To keep things simple we are using the built in Flask server. For production you will want to use a WSGI server like Gunicorn or uWSGI.
+
+0. Make sure pipevn is installed `pip install pipenv` or on mac `brew install pipenv`
+1. Setup your environment variables in `.env` file. You can use the `.env.example` file as a template.
+2. Setup your pipevn environment `pipenv install`
+3. Activate your pipevn environment `pipenv shell` or if you have autoenv installed `cd ../
+4. Run the app locally using `python app.py`. The application will be accessible at `http://localhost:8000` during development.
 
 ## License
 
