@@ -1,7 +1,7 @@
 # start by pulling the python image
 FROM python:3.9-alpine
 
-RUN apk add --update npm
+RUN apk add --update --no-cache bash npm
 RUN npm install -g npx yarn
 
 # copy the Pipfile and Pipfile.lock from the local file to the image
