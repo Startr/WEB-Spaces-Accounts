@@ -215,7 +215,7 @@ def download_and_extract_site():
 
 def build_site():
     # TODO build the site
-    os.system('cd site && export NODE_OPTIONS=--openssl-legacy-provider && yarn build')
+    os.system('cd site && yarn build')
     pass
 
 # Function to setup the new space
