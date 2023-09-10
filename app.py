@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
 import csv
-import os
+import os, sys
 import re
 import logging
 import requests # for downloading the site
@@ -60,11 +60,13 @@ def check_message(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         message = request.args.get('message')
+        note = request.args.get('note')
         return f(*args, **kwargs)
     return decorated_function
 
 
-def swuped(content, link="/dashboard", message="Go to the dash"):
+@check_message
+def swuped(content, link="/dashboard", message="Go to the dash", note=None):
     """
     Wrap html in swup div to allow for simple page transitions of content.
 
@@ -73,8 +75,6 @@ def swuped(content, link="/dashboard", message="Go to the dash"):
     message -- anchor text for link
     note -- optional note to display coming from query string
     """
-    note = request.args.get('message')
-
     return render_template('swuped.html', content=content, link=link, message=message, note=note)
 
 
@@ -199,23 +199,32 @@ def upgrade():
 
 
 # Function to download and extract site files if we don't already have them
+# TODO check the version of the site and only download if it's not the latest
+# https://gist.github.com/opencoca/afc180377b5b4aaf475da852042987ab
 def download_and_extract_site():
     if not os.path.exists('site'):
-        site_url = 'https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.2.zip'
+        site_url = 'https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.3.zip'
         response = requests.get(site_url)
         if response.status_code == 200:
-            with open('0.0.2.zip', 'wb') as zip_file:
+            with open('0.0.3.zip', 'wb') as zip_file:
                 zip_file.write(response.content)
-            os.system('unzip 0.0.2.zip')
-            os.system('mv WEB-Spaces-0.0.2 site')
-            os.remove('0.0.2.zip')
+            os.system('unzip 0.0.3.zip')
+            os.system('mv WEB-Spaces-0.0.3 site')
+            os.system('cd site && yarn install')
+            os.remove('0.0.3.zip')
+
+def build_site():
+    # TODO build the site
+    os.system('cd site && export NODE_OPTIONS=--openssl-legacy-provider && yarn build')
+    pass
 
 # Function to setup the new space
-
-
 def setup_space(space_name):
     space_folder_path = f'sites/{space_name}'
 
+    # Always rebuild the site
+    build_site()
+    # Copy the fresh site files to the new space
     if not os.path.exists(space_folder_path):
         os.makedirs(space_folder_path)
         logging.info(f'Created folder for {space_name} in static/sites')
@@ -350,6 +359,8 @@ def site_builder():
     Checks the sites.csv file for new spaces and builds them.
     Checks the sites/ folder for sites that are not in sites.csv and deletes them.
     '''
+    # Download the site files if we don't already have them
+    download_and_extract_site()
     # empty the sites/ folder
     os.system('rm -rf sites/*')
     # Check the csv file for new spaces
@@ -357,15 +368,12 @@ def site_builder():
         reader = csv.reader(file)
         for row in reader:
             if not os.path.exists('sites/' + row[1]):
-                # If the folder doesn't exist, create it
-                os.makedirs('sites/' + row[1])
-                # Copy the site/dist contents to the new folder
-                os.system('cp -r site/dist/* sites/' + row[1])
-                # create a password.txt file with the space_pass use the echo command
-                os.system('echo ' + row[2] + ' > sites/' +
-                          row[1] + '/password.txt')
-                # TODO switch this for our staticrypyt site encryptor
-                # update_space_password(space_name, space_pass)
+                # If the space doesn't exist, set space_name and space_pass
+                # and build the space
+                space_name = row[1]
+                space_pass = row[2]
+                setup_space(space_name)
+                update_space_password(space_name, space_pass)
 
 
 @app.route('/pro_page')
@@ -390,6 +398,10 @@ def send_site(path):
 
 
 if __name__ == '__main__':
+    # if the user passed --clean on launch delete the site and sites/ folder
+    if '--clean' in sys.argv:
+        os.system('rm -rf site')
+        os.system('rm -rf sites')
     # run the site_builder on launch to make sure we have a clean sites/ folder
     site_builder()
     app.jinja_env.auto_reload = True

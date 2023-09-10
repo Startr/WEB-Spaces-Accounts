@@ -1,6 +1,9 @@
 #sites should be managed by the site builder
 sites
 
+# ignore .staticrypt.json file
+.staticrypt.json
+
 #Apple DS_Store files
 .DS_Store
 
