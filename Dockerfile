@@ -2,7 +2,7 @@
 FROM python:3.9-alpine
 
 # Set environment variables for the desired Node.js and npm versions
-ENV NODE_VERSION=18.12.1
+ENV NODE_VERSION=18
 ENV NPM_VERSION=9.6.0
 
 # Install required dependencies
