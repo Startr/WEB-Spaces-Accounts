@@ -10,7 +10,7 @@ RUN apk update && apk upgrade && \
     apk add --no-cache curl make gcc g++ python3
 
 # Download and install Node.js and npm from official Alpine Linux repository
-RUN apk add --no-cache nodejs=${NODE_VERSION}-r0 npm=${NPM_VERSION}-r0
+RUN apk add --no-cache nodejs=${NODE_VERSION}-r1 npm=${NPM_VERSION}-10
 
 # Check Node.js and npm versions
 RUN node -v && npm -v
