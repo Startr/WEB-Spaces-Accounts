@@ -2,15 +2,18 @@
 FROM python:3.9-alpine
 
 # Set environment variables for the desired Node.js and npm versions
-ENV NODE_VERSION=18
+ENV NODE_VERSION=18.12.1
 ENV NPM_VERSION=9.6.0
+
+# Add community repository to apk
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
 
 # Install required dependencies
 RUN apk update && apk upgrade && \
     apk add --no-cache curl make gcc g++ python3
 
 # Download and install Node.js and npm from official Alpine Linux repository
-RUN apk add --no-cache nodejs=${NODE_VERSION} npm
+RUN apk add --no-cache nodejs=${NODE_VERSION} npm=${NPM_VERSION}
 
 # Check Node.js and npm versions
 RUN node -v && npm -v
