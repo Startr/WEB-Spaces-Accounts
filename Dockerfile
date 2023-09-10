@@ -4,6 +4,9 @@ FROM python:3.9-alpine
 RUN apk add --update --no-cache bash npm
 RUN npm install -g npx yarn
 
+
+ENTRYPOINT ["bash", "-c"]
+
 # copy the Pipfile and Pipfile.lock from the local file to the image
 COPY ./Pipfile /app/Pipfile
 COPY ./Pipfile.lock /app/Pipfile.lock
