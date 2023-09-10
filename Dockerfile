@@ -2,20 +2,24 @@
 FROM python:3.9-alpine
 
 # Set environment variables for the desired Node.js and npm versions
-#ENV NODE_VERSION=18.12.1
-#ENV NPM_VERSION=9.6.0
+ENV NODE_VERSION=18.12.1
+ENV NPM_VERSION=9.6.0
+ENV NVM_DIR /usr/local/nvm 
 
-# Add community repository to apk
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+
 
 # Install required dependencies
 RUN apk update && apk upgrade && \
-    apk add --no-cache curl make gcc g++ python3
+    apk add curl make gcc g++ python3
 
-# Download and install Node.js and npm from official Alpine Linux repository
-#RUN apk add --no-cache nodejs=${NODE_VERSION} npm=${NPM_VERSION}
-# to install the latest version of nodejs and npm
-RUN apk add --no-cache nodejs npm
+RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.39.5/install.sh | bash \
+    && . $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
+
+ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
+ENV PATH      $NVM_DIR/v$NODE_VERSION/bin:$PATH
 
 
 # Check Node.js and npm versions
