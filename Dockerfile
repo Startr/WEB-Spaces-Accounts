@@ -1,7 +1,9 @@
 # start by pulling the python image
 FROM python:3.9-alpine
 
-RUN apk add --update --no-cache bash npm nodejs<18.12.1
+RUN apk add --update --no-cache 'bash npm nodejs<18.12.1' \
+    && rm -rf /var/cache/apk/*
+    
 RUN npm install -g npx yarn
 
 
