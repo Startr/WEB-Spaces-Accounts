@@ -1,8 +1,24 @@
 # start by pulling the python image
 FROM python:3.9-alpine
 
-RUN apk add --update --no-cache bash 'nodejs=18.12.1' 'npm=9.6.0' \
-    && rm -rf /var/cache/apk/*
+# Set environment variables for the desired Node.js and npm versions
+ENV NODE_VERSION=18.12.1
+ENV NPM_VERSION=9.6.0
+
+# Install required dependencies
+RUN apk update && apk upgrade && \
+    apk add --no-cache curl make gcc g++ python3
+
+# Download and install Node.js and npm
+RUN curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz | tar -xJ -C /usr/local --strip-components=1 && \
+    npm install -g npm@${NPM_VERSION}
+
+# Cleanup unnecessary dependencies
+RUN apk del curl make gcc g++ python3 && \
+    rm -rf /var/cache/apk/*
+
+# Check Node.js and npm versions
+RUN node -v && npm -v
 
 RUN npm install -g npx yarn
 
