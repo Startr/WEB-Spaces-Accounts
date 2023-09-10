@@ -1,12 +1,12 @@
 # start by pulling the python image
-FROM python:3.9-alpine
+FROM python:3.16-alpine
 
 # Set environment variables for the desired Node.js and npm versions
 ENV NODE_VERSION=18.12.1
 ENV NPM_VERSION=9.6.0
 
 # Add community repository to apk
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+#RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
 
 # Install required dependencies
 RUN apk update && apk upgrade && \
