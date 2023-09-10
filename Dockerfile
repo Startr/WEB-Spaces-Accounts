@@ -12,8 +12,8 @@ ENV NVM_DIR /usr/local/nvm
 RUN apk update && apk upgrade && \
     apk add bash curl make gcc g++ python3
 
-RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.39.5/install.sh | bash \
-    && . $NVM_DIR/nvm.sh \
+RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.39.5/install.sh | bash
+RUN . $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION \
     && nvm alias default $NODE_VERSION \
     && nvm use default
