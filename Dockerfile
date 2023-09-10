@@ -10,7 +10,7 @@ ENV NVM_DIR /usr/local/nvm
 
 # Install required dependencies
 RUN apk update && apk upgrade && \
-    apk add curl make gcc g++ python3
+    apk add bash curl make gcc g++ python3
 
 RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.39.5/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
