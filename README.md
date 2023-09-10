@@ -100,6 +100,8 @@ echo export PRO_PRICE="{{ your_pro_price }}" >> .env
 # Sets a default price for the Pro plan
 # Currently, this is a one-time payment
 
+echo export NODE_OPTIONS=--openssl-legacy-provider >> .env
+
 echo echo "Keys set" >> .env
 
 echo pipenv shell >> .env
