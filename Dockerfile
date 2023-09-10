@@ -9,21 +9,8 @@ ENV NPM_VERSION=9.6.0
 RUN apk update && apk upgrade && \
     apk add --no-cache curl make gcc g++ python3
 
-# Download and install Node.js
-RUN curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz | tar -xJ -C /usr/local --strip-components=1 
-
-# Add the Node.js binary directory to the PATH
-ENV PATH="/usr/local/bin:${PATH}"
-
-# Check Node.js version
-RUN node -v
-
-# Install npm using the updated PATH
-RUN curl -fsSL https://www.npmjs.com/install.sh | sh
-
-# Cleanup unnecessary dependencies
-RUN apk del curl make gcc g++ python3 && \
-    rm -rf /var/cache/apk/*
+# Download and install Node.js and npm from official Alpine Linux repository
+RUN apk add --no-cache nodejs=${NODE_VERSION}-r0 npm=${NPM_VERSION}-r0
 
 # Check Node.js and npm versions
 RUN node -v && npm -v
