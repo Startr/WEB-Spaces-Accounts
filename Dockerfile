@@ -26,4 +26,4 @@ COPY . /app
 EXPOSE 8000
 
 # Run our CMD within the virtual environment
-CMD ["pipenv", "run", "python", "app.py"]
+CMD ["pipenv run python app.py"]
