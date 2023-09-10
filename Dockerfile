@@ -11,6 +11,9 @@ RUN apk update && apk upgrade && \
 
 # Download and install Node.js and npm
 RUN curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz | tar -xJ -C /usr/local --strip-components=1 
+# Add the Node.js binary directory to the PATH
+ENV PATH="/usr/local/bin:${PATH}"
+
 RUN npm install -g npm@${NPM_VERSION}
 
 # Cleanup unnecessary dependencies
