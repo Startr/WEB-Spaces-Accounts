@@ -10,8 +10,8 @@ RUN apk update && apk upgrade && \
     apk add --no-cache curl make gcc g++ python3
 
 # Download and install Node.js and npm
-RUN curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz | tar -xJ -C /usr/local --strip-components=1 && \
-    npm install -g npm@${NPM_VERSION}
+RUN curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz | tar -xJ -C /usr/local --strip-components=1 
+RUN npm install -g npm@${NPM_VERSION}
 
 # Cleanup unnecessary dependencies
 RUN apk del curl make gcc g++ python3 && \
