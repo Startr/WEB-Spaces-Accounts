@@ -202,16 +202,17 @@ def upgrade():
 # TODO check the version of the site and only download if it's not the latest
 # https://gist.github.com/opencoca/afc180377b5b4aaf475da852042987ab
 def download_and_extract_site():
+    latest_site_version = '0.0.3.1'
     if not os.path.exists('site'):
-        site_url = 'https://github.com/Startr/WEB-Spaces/archive/refs/tags/0.0.3.zip'
+        site_url = f'https://github.com/Startr/WEB-Spaces/archive/refs/tags/{latest_site_version}.zip'
         response = requests.get(site_url)
         if response.status_code == 200:
-            with open('0.0.3.zip', 'wb') as zip_file:
+            with open(f'{latest_site_version}.zip', 'wb') as zip_file:
                 zip_file.write(response.content)
-            os.system('unzip 0.0.3.zip')
-            os.system('mv WEB-Spaces-0.0.3 site')
+            os.system(f'unzip {latest_site_version}.zip')
+            os.system(f'mv WEB-Spaces-{latest_site_version} site')
             os.system('cd site && yarn install')
-            os.remove('0.0.3.zip')
+            os.remove(f'{latest_site_version}.zip')
 
 def build_site():
     # TODO build the site
