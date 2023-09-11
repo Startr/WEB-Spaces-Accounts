@@ -12,16 +12,13 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repos
 RUN apk update && apk upgrade && \
     apk add curl make gcc g++ python3
 
-# Download and install Node.js and npm from official Alpine Linux repository
-#RUN apk add --no-cache nodejs=${NODE_VERSION} npm=${NPM_VERSION}
-# to install the latest version of nodejs and npm
+# Install Node.js and npm
 RUN apk add --no-cache nodejs npm
-
 
 # Check Node.js and npm versions
 RUN node -v && npm -v
 
-RUN npm install -g npx yarn
+RUN npm install -g yarn
 
 
 ENTRYPOINT ["bash", "-c"]

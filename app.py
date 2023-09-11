@@ -248,7 +248,7 @@ def delete_space(space_name):
         return redirect(url_for('free?nospace', message="A Space with that name does not exist."))
 
 
-# Function to update the password for a space using npx staticrypt
+# Function to update the password for a space using staticrypt
 def update_space_password(space_name, space_pass):
     # This uses staticrypt to update a fresh instance of a site
     # TODO keep a backup of the old index so we can do it again
