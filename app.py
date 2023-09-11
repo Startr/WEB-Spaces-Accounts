@@ -55,17 +55,6 @@ with app.app_context():
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-
-def check_message(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        message = request.args.get('message')
-        note = request.args.get('note')
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-@check_message
 def swuped(content, link="/dashboard", message="Go to the dash", note=None):
     """
     Wrap html in swup div to allow for simple page transitions of content.
@@ -79,7 +68,6 @@ def swuped(content, link="/dashboard", message="Go to the dash", note=None):
 
 
 @app.route('/')
-@check_message
 def index():
     return render_template('index.html', message=request.args.get('message'))
 
@@ -95,7 +83,6 @@ def contact():
 
 
 @app.route('/login', methods=['GET', 'POST'])
-@check_message
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -122,7 +109,6 @@ def logout():
 
 
 @app.route('/register', methods=['GET', 'POST'])
-@check_message
 def register():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -138,8 +124,8 @@ def register():
         db.session.commit()
         login_user(new_user)
         return redirect(url_for('free', message="You're now registered and logged in!"))
+    
     message = request.args.get('message')
-
     return render_template('register.html', message=message)
 
 
@@ -149,7 +135,6 @@ def unauthorized_callback():
 
 
 @app.route('/dashboard')
-@check_message
 @login_required
 def dashboard():
     routes = []
@@ -225,7 +210,6 @@ def setup_space(space_name):
     space_backup_path = f'site_backup/{space_name}'
 
     # Copy fresh site files to the new space
-    # check if the space already exists and only copy if it doesn't
     if not os.path.exists(space_folder_path):
         build_site()
         os.makedirs(space_folder_path)
@@ -270,7 +254,6 @@ def unix_timestamp():
 
 
 @app.route('/free', methods=['GET', 'POST'])
-@check_message
 @login_required
 def free():
     '''
@@ -378,7 +361,6 @@ def site_builder():
 
 
 @app.route('/pro_page')
-@check_message
 @login_required
 def pro_page():
     if current_user.account_type == 'pro':
@@ -388,18 +370,14 @@ def pro_page():
         return redirect(url_for('upgrade'))
 
 # Route to /sites/<space_name> to display the static sites
-
-
 @app.route('/sites/<path:path>')
 def send_site(path):
-    # if the path is a folder, add index.html to the end
     if os.path.isdir('sites/' + path):
         path += '/index.html'
     return send_from_directory('sites/', path)
 
 
 if __name__ == '__main__':
-    # if the user passed --clean on launch delete the site and sites/ folder
     if '--clean' in sys.argv:
         os.system('rm -rf site')
         os.system('rm -rf sites')
