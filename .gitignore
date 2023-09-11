@@ -1,5 +1,6 @@
-#sites should be managed by the site builder
+#sites and site_backup should be managed by the site builder
 sites
+site_backup
 
 # ignore .staticrypt.json file
 .staticrypt.json

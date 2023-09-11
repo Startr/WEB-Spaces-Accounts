@@ -222,15 +222,19 @@ def build_site():
 # Function to setup the new space
 def setup_space(space_name):
     space_folder_path = f'sites/{space_name}'
+    space_backup_path = f'site_backup/{space_name}'
 
-    # Always rebuild the site
-    build_site()
-    # Copy the fresh site files to the new space
+    # Copy fresh site files to the new space
+    # check if the space already exists and only copy if it doesn't
     if not os.path.exists(space_folder_path):
+        build_site()
         os.makedirs(space_folder_path)
         logging.info(f'Created folder for {space_name} in static/sites')
         os.system(f'cp -r site/dist/* {space_folder_path}')
         logging.info(f'Copied site/dist contents to {space_folder_path}')
+        # Backup the site/dist/index.html file to site_backup
+        os.system(f'mkdir -p {space_backup_path} && cp -f site/dist/index.html {space_backup_path}')
+        logging.info(f'Copied site/dist/index.html to {space_backup_path}')
     else:
         logging.warning(f'Space {space_name} already exists')
         return redirect(url_for('free?exists', message="A Space with that name already exists. Please choose another name."))
@@ -250,14 +254,10 @@ def delete_space(space_name):
 
 # Function to update the password for a space using staticrypt
 def update_space_password(space_name, space_pass):
-    # This uses staticrypt to update a fresh instance of a site
-    # TODO keep a backup of the old index so we can do it again
-    # For now delete space and recreate it
-    delete_space(space_name)
-    setup_space(space_name)
+    # This uses staticrypt to update the password for the site
     # Run staticrypt to encrypt the site
     command = (
-        f'npm exec -- staticrypt sites/{space_name}/index.html -d sites/{space_name} '
+        f'npm exec -- staticrypt site_backup/{space_name}/index.html -d sites/{space_name} '
         f'-p "{space_pass}" --short -t site/password_template.html'
     )
     os.system(command)
