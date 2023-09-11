@@ -237,7 +237,7 @@ def setup_space(space_name):
         logging.info(f'Copied site/dist/index.html to {space_backup_path}')
     else:
         logging.warning(f'Space {space_name} already exists')
-        return redirect(url_for('free?exists', message="A Space with that name already exists. Please choose another name."))
+        return redirect(url_for('free', message="A Space with that name already exists. Please choose another name."))
 
 # Delete a space
 
