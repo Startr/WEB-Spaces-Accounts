@@ -202,7 +202,6 @@ def download_and_extract_site():
 def build_site():
     # TODO build the site
     os.system('cd site && yarn build')
-    pass
 
 # Function to setup the new space
 def setup_space(space_name):
