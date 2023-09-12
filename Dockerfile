@@ -10,7 +10,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repos
 
 # Install required dependencies
 RUN apk update && apk upgrade && \
-    apk add curl make gcc g++ python3
+    apk add bash curl make gcc g++ python3
 
 # Install Node.js and npm
 RUN apk add --no-cache nodejs npm
@@ -18,7 +18,7 @@ RUN apk add --no-cache nodejs npm
 # Check Node.js and npm versions
 RUN node -v && npm -v
 
-RUN npm install -g yarn
+RUN npm install -g npx yarn
 
 
 ENTRYPOINT ["bash", "-c"]
