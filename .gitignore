@@ -2,6 +2,9 @@
 sites
 site_backup
 
+# vscode
+.vscode
+
 # ignore .staticrypt.json file
 .staticrypt.json
 
