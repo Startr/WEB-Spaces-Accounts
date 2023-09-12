@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     {% block head %}
     <title>{% block title %}Site{% endblock %}</title>
@@ -18,21 +18,20 @@
     <script src="{{ url_for('static', filename='js/swup.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/swup-forms-plugin.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/swup-scripts-plugin.min.js') }}"></script>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
-    {# https://codepen.io/openco/pen/xxJYvgR.css Startr CSS Startr Style is a
-    utility-first CSS framework for rapidly building custom user interfaces.
-    Avoiding class bloat, Startr Style provides a minimal set of styles and
-    robust utilities using variables and logic to cover a wide variety of use
-    cases. #} {#
+    <script src="{{ url_for('static', filename='js/swup-progress-plugin.js') }}"></script>
+    {# https://startr.style Startr CSS Startr Style is a utility-first CSS
+    framework for rapidly building custom user interfaces. Avoiding class bloat,
+    Startr Style provides a minimal set of styles and robust utilities using
+    variables and logic to cover a wide variety of use cases. #}
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/startr.css') }}"
     />
-    #}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/startr.css') }}">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+
     <link
       rel="shortcut icon"
       href="{{ url_for('static', filename='favicon/favicon.ico') }}"
@@ -44,6 +43,7 @@
             formSelector: "form:not([data-no-swup])",
           }),
           new SwupScriptsPlugin({ head: true, body: true }),
+          new SwupProgressPlugin(),
         ],
       });
     </script>
@@ -53,11 +53,18 @@
   </head>
   <body class="invisible" style="--d: flex; --fd: column; --minh: 100vh">
     <nav
+      aria-label="main navigation"
       class="navbar row"
       style="--d: none; --d-md: flex; --ta: center; --jc: space-between"
     >
       <h3 class="column">
-        <a href="/"><img class="shadowed" src="/images/logo.jpg" style="--w: 200px" /></a>
+        <a href="/">
+          <img 
+          alt="Startr Logo"
+          class="shadowed" 
+          src="/images/logo.jpg" 
+          style="--w: 200px"/>
+      </a>
       </h3>
       <div style="--pr: 1rem">
         {% if session._user_id %}
@@ -78,7 +85,8 @@
         {% endif %}
       </div>
     </nav>
-    <nav role="navigation" style="--d: inherit; --d-md: none">
+    <nav aria-label="complementary navigation" class="navbar row
+    role="navigation" style="--d: inherit; --d-md: none">
       <a href="/"><img class="shadowed" src="/images/logo.jpg" /></a>
       <div id="menuToggle">
         {#hidden checkbox is used as click reciever, so you can use the :checked

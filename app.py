@@ -9,10 +9,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
 import csv
-import os, sys
+import os
+import sys
 import re
 import logging
-import requests # for downloading the site
+import requests  # for downloading the site
 
 import stripe
 
@@ -21,6 +22,8 @@ config = {
     "SQLALCHEMY_DATABASE_URI": "sqlite:////tmp/test.db"  # connect to database
 }
 
+site_db = 'sites.csv'
+
 app = Flask(__name__, static_url_path='')
 
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
@@ -28,7 +31,6 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY")
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 app.config.from_mapping(config)
-
 
 db = SQLAlchemy(app)
 
@@ -54,6 +56,7 @@ with app.app_context():
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 def swuped(content, link="/dashboard", message="Go to the dash", note=None):
     """
@@ -124,7 +127,7 @@ def register():
         db.session.commit()
         login_user(new_user)
         return redirect(url_for('free', message="You're now registered and logged in!"))
-    
+
     message = request.args.get('message')
     return render_template('register.html', message=message)
 
@@ -199,33 +202,35 @@ def download_and_extract_site():
             os.system('cd site && yarn install')
             os.remove(f'{latest_site_version}.zip')
 
+
 def build_site():
     # TODO build the site
     os.system('cd site && yarn build')
 
-# Function to setup the new space
+
 def setup_space(space_name):
+    """Setup a new space"""
     space_folder_path = f'sites/{space_name}'
     space_backup_path = f'site_backup/{space_name}'
 
-    # Copy fresh site files to the new space
-    if not os.path.exists(space_folder_path):
+    if os.path.exists(space_folder_path):
+        logging.warning(f'Space {space_name} already exists')
+        return redirect(url_for('free', message="A Space with that name already exists. Please choose another name."))
+    else:
         build_site()
         os.makedirs(space_folder_path)
         logging.info(f'Created folder for {space_name} in static/sites')
         os.system(f'cp -r site/dist/* {space_folder_path}')
         logging.info(f'Copied site/dist contents to {space_folder_path}')
         # Backup the site/dist/index.html file to site_backup
-        os.system(f'mkdir -p {space_backup_path} && cp -f site/dist/index.html {space_backup_path}')
+        os.system(
+            f'mkdir -p {space_backup_path} && \
+              cp -f site/dist/index.html {space_backup_path}')
         logging.info(f'Copied site/dist/index.html to {space_backup_path}')
-    else:
-        logging.warning(f'Space {space_name} already exists')
-        return redirect(url_for('free', message="A Space with that name already exists. Please choose another name."))
-
-# Delete a space
 
 
 def delete_space(space_name):
+    """Delete a space"""
     space_folder_path = f'sites/{space_name}'
     if os.path.exists(space_folder_path):
         os.system(f'rm -rf {space_folder_path}')
@@ -235,10 +240,12 @@ def delete_space(space_name):
         return redirect(url_for('free?nospace', message="A Space with that name does not exist."))
 
 
-# Function to update the password for a space using staticrypt
 def update_space_password(space_name, space_pass):
-    # This uses staticrypt to update the password for the site
-    # Run staticrypt to encrypt the site
+    """
+    Update the password for a space
+    space_name -- the name of the space
+    space_pass -- the new password for the space
+    """
     command = (
         f'npm exec -- staticrypt site_backup/{space_name}/index.html -d sites/{space_name} '
         f'-p "{space_pass}" --short -t site/password_template.html'
@@ -268,7 +275,7 @@ def free():
             return redirect(url_for('free', message="Please provide both your Space's Name and Space's Password."))
 
         data = []
-        with open('sites.csv', 'r') as file:
+        with open(site_db, 'r') as file:
             reader = csv.reader(file)
             for row in reader:
                 data.append(row)
@@ -278,7 +285,7 @@ def free():
                 # Write new password to csv file in the same row
                 data[idx][2] = space_pass
                 # Write the new csv file
-                with open('sites.csv', 'w') as file:
+                with open(site_db, 'w') as file:
                     # append the new row
                     writer = csv.writer(file)
                     writer.writerows(data)
@@ -295,11 +302,11 @@ def free():
                 # delete the old space and update the csv file to not include it
                 delete_space(row[1])
                 data.pop(idx)
-                with open('sites.csv', 'w') as file:
+                with open(site_db, 'w') as file:
                     writer = csv.writer(file)
                     writer.writerows(data)
 
-        with open('sites.csv', 'a', newline='') as file:
+        with open(site_db, 'a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([current_user.email, space_name,
                             space_pass, "Today's date"])
@@ -319,7 +326,7 @@ def free():
     elif request.method == 'GET':
         # Check if the user has a space_name in the csv file
         # If they do return the space_name and space_pass
-        with open('sites.csv', 'r') as file:
+        with open(site_db, 'r') as file:
             reader = csv.reader(file)
             for row in reader:
                 if row[0] == current_user.email:
@@ -347,7 +354,7 @@ def site_builder():
     # empty the sites/ folder
     os.system('rm -rf sites/*')
     # Check the csv file for new spaces
-    with open('sites.csv', 'r') as file:
+    with open(site_db, 'r') as file:
         reader = csv.reader(file)
         for row in reader:
             if not os.path.exists('sites/' + row[1]):
@@ -368,7 +375,7 @@ def pro_page():
     else:
         return redirect(url_for('upgrade'))
 
-# Route to /sites/<space_name> to display the static sites
+
 @app.route('/sites/<path:path>')
 def send_site(path):
     if os.path.isdir('sites/' + path):
