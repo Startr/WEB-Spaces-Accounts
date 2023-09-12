@@ -46,14 +46,6 @@
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-body {
-  color: hsl(0, 0%, 20%);
-  max-width: 60rem;
-  margin: auto;
-  font-size: 1.4rem;
-  transition: 0.4s;
-}
-
 .transition-fade {
   transition: 0.4s;
   opacity: 1;
