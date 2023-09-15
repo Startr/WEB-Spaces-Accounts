@@ -32,6 +32,10 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 app.config.from_mapping(config)
 
+# Markdown support
+from flaskext.markdown import Markdown
+Markdown(app)
+
 db = SQLAlchemy(app)
 
 if not os.path.exists('uploads'):
@@ -58,16 +62,29 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-def swuped(content, link="/dashboard", message="Go to the dash", note=None):
+def swuped(markdown=None, link="/dashboard", message="Go to the dash", content=None):
     """
     Wrap html in swup div to allow for simple page transitions of content.
 
     content -- html to display
     link -- link to another page
     message -- anchor text for link
-    note -- optional note to display coming from query string
+    markdown -- Optional markdown file to render
+                Markdownfiles are found in the markdown/ folder & if we omit the .md extension
+                we will automatically add it. If neither of these are true, we will assume that the content
+                is already markdown and render it as such.
     """
-    return render_template('swuped.html', content=content, link=link, message=message, note=note)
+    if markdown:
+        if not markdown.endswith('.md'):
+            markdown += '.md'
+        # Check if the markdown file exists
+        if not os.path.exists('markdown/' + markdown):
+            content = markdown
+        else:
+            with open('markdown/' + markdown, 'r') as file:
+                markdown = file.read()
+            
+    return render_template('swuped.html', content=content, link=link, message=message, markdown=markdown)
 
 
 @app.route('/')
@@ -77,12 +94,29 @@ def index():
 
 @app.route('/about')
 def about():
-    return swuped('This is the about page.', link="/contact", message="Go to the contact page.")
+    return swuped("about.md", link="/contact", message="Go to the contact page.")
 
+@app.route('/terms')
+def terms():
+    return swuped("terms.md", link="/contact", message="Go to the contact page.")
+
+@app.route('/privacy')
+def privacy():
+    return swuped("privacy.md", link="/contact", message="Go to the contact page.")
+
+@app.route('/faq')
+def faq():
+    return swuped("faq.md", link="/contact", message="Go to the contact page.")
+
+# Create a route that maps all the markdown files in the markdown/ folder to a swuped page
+# This allows us to create new pages without having to add a new route for each one
+@app.route('/s/<path:markdown>')
+def markdown_page(markdown):
+    return swuped(markdown, link=url_for('free'), message="Manage your space.")   
 
 @app.route('/contact')
 def contact():
-    return swuped('This is the contact page.')
+    return swuped('contact')
 
 
 @app.route('/login', methods=['GET', 'POST'])

@@ -1,10 +1,21 @@
-{% extends "layout.html" %} {% block title %}{{ content }}{% endblock %}
+{% extends "layout.html" %}
+{% block title %}{{ content }}
+{% endblock %}
 <!---->
 {% block content %}
-<h2>{{ content }}</h2>
-{% if note %}
-<h3>{{ note }}</h3>
-{% endif %}
-<a href="{{ link }}">{{ message }}</a>
-{% endblock %}
+    {% if content %}
+        <h1>{{ content }}</h1>
+    {% endif %}
+    <section style="--maxw:60rem; --p:4rem">
+        {% if markdown %}
+            {% filter markdown %}
+{# markdown must not be indented #}
+{{ markdown }}
+        {% endfilter %}
+    {% endif %}
+            <p>
+                <a style="--ft:right" href="{{ link }}">{{ message }}</a>
+            </p>
+            </section>
 
+{% endblock %}

@@ -1,12 +1,12 @@
 :root {
-  --white: #fff;
-  --grey: #e6e6e6;
-  --black: #262626;
+  --white: hsl(0, 100%, 100%);
+  --grey: hsl(0, 0%, 90%);
+  --black: hsl(0, 0%, 15%);
   --green: hsl(152, 87%, 22%);
   --blue: hsl(217, 71%, 53%);
   --orange: hsl(34, 100%, 50%);
   --red: hsl(348, 100%, 61%);
-  --purple: hsl(273, 99%, 31%);
+  --purple: hsl(274, 98%, 25%);
   --yellow: hsl(48, 100%, 67%);
   --pink: hsl(330, 100%, 69%);
 
