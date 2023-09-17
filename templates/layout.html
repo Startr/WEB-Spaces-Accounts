@@ -70,7 +70,7 @@
         {% if session._user_id %}
         <a href="/dashboard">⑈</a> - <a href="/free">Manage Your Space</a> - {%
         else %} <a href="/">Home</a> - {% endif %}<!-- -->
-        <a href="/about">About</a> - <a href="/contact">Contact</a> - {#}only
+        <a href="/s/about">About</a> - <a href="/s/contact">Contact</a> - {#}only
         show these links if the user is not logged in {#} {% if not
         session._user_id %}
         <a href="/register"><button>Register and Setup Your Space</button></a> -
@@ -96,7 +96,7 @@
         <div id="menu">
           <ul onclick="closeMenu()">
             <li><a href="/">Home</a></li>
-            <li><a href="/about">About</a></li>
+            <li><a href="/s/about">About</a></li>
             <li>
               <a href="/register">
                 <button class="button is-info">Try it Free</button>
@@ -150,9 +150,9 @@
             >.
           </p>
           <p style="--mb: 0">
-            <a href="/terms">Terms of Service</a> - <a href="/privacy">Privacy</a>
-            <a href="/contact">Contact</a> - <a href="/about">About</a>
-            <a href="/faq">FAQ</a>
+            <a href="/s/terms">Terms of Service</a> - <a href="/s/privacy">Privacy</a>
+            <a href="/s/contact">Contact</a> - <a href="/s/about">About</a>
+            <a href="/s/faq">FAQ</a>
         </div>
       </div>
     </footer>

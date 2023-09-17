@@ -180,11 +180,26 @@ textarea {
   font: inherit
 }
 details {
-  display: block
+  display: block;
+  max-height: 4em;
+  transition: max-height 500ms ease, border 0ms 400ms linear;
+  overflow: hidden;
 }
+
+details[open] {
+  max-height: 100vh; /* Set a max-height value enough to show all the content */
+  border-color: var( --primary);
+  /*transition: max-height 800ms ease-out, border 400ms linear;*/
+}
+
 summary {
   display: list-item
 }
+
+summary:hover {
+  cursor: pointer;
+}
+
 template {
   display: none
 }

@@ -1,3 +1,4 @@
+from flaskext.markdown import Markdown
 from flask import Flask, flash, render_template, request, redirect, url_for
 from flask import send_from_directory, abort
 from flask_sqlalchemy import SQLAlchemy
@@ -33,7 +34,6 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 app.config.from_mapping(config)
 
 # Markdown support
-from flaskext.markdown import Markdown
 Markdown(app)
 
 db = SQLAlchemy(app)
@@ -75,15 +75,15 @@ def swuped(markdown=None, link="/dashboard", message="Go to the dash", content=N
                 is already markdown and render it as such.
     """
     if markdown:
-        if not markdown.endswith('.md'):
-            markdown += '.md'
+        markdown = markdown if markdown.endswith('.md') else markdown + '.md'
         # Check if the markdown file exists
         if not os.path.exists('markdown/' + markdown):
+            markdown = markdown[:-3]
             content = markdown
         else:
             with open('markdown/' + markdown, 'r') as file:
                 markdown = file.read()
-            
+
     return render_template('swuped.html', content=content, link=link, message=message, markdown=markdown)
 
 
@@ -92,17 +92,20 @@ def index():
     return render_template('index.html', message=request.args.get('message'))
 
 
-@app.route('/about')
+@app.route('/s/about')
 def about():
     return swuped("about.md", link="/contact", message="Go to the contact page.")
+
 
 @app.route('/terms')
 def terms():
     return swuped("terms.md", link="/contact", message="Go to the contact page.")
 
+
 @app.route('/privacy')
 def privacy():
     return swuped("privacy.md", link="/contact", message="Go to the contact page.")
+
 
 @app.route('/faq')
 def faq():
@@ -110,9 +113,12 @@ def faq():
 
 # Create a route that maps all the markdown files in the markdown/ folder to a swuped page
 # This allows us to create new pages without having to add a new route for each one
+
+
 @app.route('/s/<path:markdown>')
 def markdown_page(markdown):
-    return swuped(markdown, link=url_for('free'), message="Manage your space.")   
+    return swuped(markdown, link=url_for('free'), message="Manage your space.")
+
 
 @app.route('/contact')
 def contact():
@@ -221,7 +227,7 @@ def upgrade():
 
 
 # Function to download and extract site files if we don't already have them
-# TODO check the version of the site and only download if it's not the latest
+# TODO: check the version of the site and only download if it's not the latest
 # https://gist.github.com/opencoca/afc180377b5b4aaf475da852042987ab
 def download_and_extract_site():
     latest_site_version = '0.0.3.1'
@@ -238,7 +244,7 @@ def download_and_extract_site():
 
 
 def build_site():
-    # TODO build the site
+    # TODO: build the site more quickly by only building the changed files
     os.system('cd site && yarn build')
 
 
@@ -298,7 +304,8 @@ def unix_timestamp():
 def free():
     '''
     TODO: Add automatic site archiving after 7 days
-    TODO: Add automatic site reminders after every 7 days, include the # of visitors
+    TODO: Add automatic site reminders after every 7 days
+    TODO: Add include the # of visitors to the site in the email
 
     '''
     if request.method == 'POST':

@@ -162,7 +162,14 @@ Do you offer customer support during meetings?
 
 > We believe in our product and often offer trial periods for our potential PRO and Enterprise users. Please reach out to our sales team to inquire about any ongoing trial offers.
 
-**How do billing and payments work for the additional rooms in the Enterprise package?**
-----------------------------------------------------------------------------------------
+**How do billing and payments work for the additional rooms in the Enterprise package?** -------------------------------------------------------------------------------
 
 > When you add more rooms to your Enterprise package, the additional monthly charges will be prorated and added to your next invoice. All billing details and histories can be accessed from your account dashboard.
+
+**Can I cancel my PRO or Enterprise subscription at any time?**
+---------------------------------------------------------------
+
+> Yes, you can cancel your subscription at any time. > You will be charged only for the number of days you used the service if you cancel your subscription before the end of the month. Please note that we are only able to offer refunds for annual subscriptions if you cancel within the first 30 days of your subscription.
+>
+> You can cancel your subscription from your account dashboard. If you have any questions or concerns, please contact our support team.
+>
