@@ -47,7 +47,7 @@
         ],
       });
     </script>
-    <script src="https://js.stripe.com/v3/" data-swup-ignore-script></script>
+    <script src="https://js.stripe.com/v3/" data-swup-ignore-script defer></script>
 
     {% endblock %}
   </head>
@@ -59,8 +59,8 @@
     >
       <h3 class="column">
         <a href="/">
-          <img 
-          alt="Startr Logo"
+          <img
+          alt="The Startr Instant Spaces Logo"
           class="shadowed" 
           src="/images/logo.jpg" 
           style="--w: 200px"/>
@@ -85,12 +85,13 @@
         {% endif %}
       </div>
     </nav>
+
     <nav aria-label="complementary navigation" class="navbar row
     role="navigation" style="--d: inherit; --d-md: none">
-      <a href="/"><img class="shadowed" src="/images/logo.jpg" /></a>
+      <a href="/"><img alt="The Startr Instant Spaces Logo" class="shadowed" src="/images/logo.jpg" /></a>
       <div id="menuToggle">
         {#hidden checkbox is used as click reciever, so you can use the :checked
-        selector on it.#}<input type="checkbox" /> {#Some spans to act as a
+        selector on it.#}<input aria-label="menuToggle" type="checkbox" /> {#Some spans to act as a
         hamburger. They are acting like a real hamburger, not that McDonalds
         stuff.#}<span></span><span></span><span></span>
         <div id="menu">
