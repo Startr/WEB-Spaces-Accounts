@@ -20,14 +20,15 @@
       <li>Enterprise accounts can have up to 1000 users.</li>
     </ul>
   </details>
-  <form action="/free#submit" method="POST" enctype="multipart/form-data">
+  <form autocomplete="off" action="/free#submit" method="POST" enctype="multipart/form-data">
     <label for="space_name">
       <p style="--w: 25ch;--m:auto;--mb: 2rem;--mt: 2rem;">
         {% if space_name %}
-          <p>Your Startr.Space is:</p>
+          <p>Your <a href="/sites/{{space_name}}/">Startr.Space</a> is ready to go!</p>
+          <p> Your Startr.Space's name is:</p>
         {% else %}
-          <p>Give your Startr.Space a good clear name.<br> 
-    Make sure it's memorable for your vistors.</p>
+          <p>Give your Startr.Space a good clear name.</p> 
+          <p>Make sure it's memorable for your vistors.</p>
         {% endif %}
       </label>
       <input
