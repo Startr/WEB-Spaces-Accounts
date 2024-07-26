@@ -34,7 +34,9 @@ RUN pip install pipenv
 WORKDIR /app
 
 # install the dependencies and packages in the requirements file
-RUN pipenv install 
+RUN pipenv install
+
+RUN npm install -g staticrypt
 
 # copy every content from the local file to the image
 COPY . /app
