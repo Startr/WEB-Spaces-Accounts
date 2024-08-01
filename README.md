@@ -30,22 +30,29 @@ We license our projects under the [AGPL-3.0](https://choosealicense.com/licenses
 
 ##  Includes 🛠️
 
+## Includes 🛠️
+
 Here's what you'll find in this awesome project:
 
-- ✨ Quick Site with super smooth page transitions
-- 🔐 User authentication
-- 👥 Members only page logic
-- 🎯 Pro members only page logic
-- 📝 Contact form
-- 📂 File upload
+> **Note:** To access the links, you must be running the development server on your local machine at `127.0.0.1:8000`.
+
+- ✨ [Quick Site](http://127.0.0.1:8000/) with super smooth page transitions
+- 🔐 [User Authentication](http://127.0.0.1:8000/login/)
+- 👥 [Members Only Page Logic](http://127.0.0.1:8000/members/)
+- 🎯 [Pro Members Only Page Logic](http://127.0.0.1:8000/pro-members/)
+- 📝 [Contact Form](http://127.0.0.1:8000/contact/)
+- 📂 [File Upload](http://127.0.0.1:8000/upload/)
 - 💵 Billing
-  - 💳 Stripe integration
-  - 🔄 Subscriptions
-- 📊 User dashboard
-- 👩‍💼 User roles
-- 🔑 Login
-- 🔒 Logout
-- 📝 User registration
+  - 💳 [Stripe Integration](http://127.0.0.1:8000/billing/stripe/)
+  - 🔄 [Subscriptions](http://127.0.0.1:8000/billing/subscriptions/)
+- 📊 [User Dashboard](http://127.0.0.1:8000/dashboard/)
+- 👩‍💼 [User Roles](http://127.0.0.1:8000/user-roles/)
+- 🔑 [Login](http://127.0.0.1:8000/login/)
+- 🔒 [Logout](http://127.0.0.1:8000/logout/)
+- 📝 [User Registration](http://127.0.0.1:8000/register/)
+
+Each link provides a direct path to the corresponding feature, ensuring you can explore and interact with the components seamlessly.
+
 
 ## More details
 
