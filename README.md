@@ -53,6 +53,58 @@ Here's what you'll find in this awesome project:
 
 Each link provides a direct path to the corresponding feature, ensuring you can explore and interact with the components seamlessly.
 
+## Directory Structure & Data Organization 📁
+
+This application is organized with a clean, Docker-friendly directory structure that keeps all persistent data in a single `data/` volume:
+
+### Data Directory Structure
+
+```
+data/
+├── app.db                    # SQLite database (user accounts, sessions)
+├── site/                     # Site template source (downloaded & built from GitHub)
+│   ├── dist/                 # Built site files ready for deployment
+│   ├── src/                  # Source files for the site template
+│   ├── package.json          # Node.js dependencies for site building
+│   ├── password_template.html # Template for password-protected sites
+│   └── ...                   # Other site template files
+└── sites/                    # Generated user spaces (served to visitors)
+    ├── {space_name_1}/       # Individual user space files
+    │   ├── index.html        # Password-protected entry point
+    │   ├── assets/           # Static assets (CSS, JS, images)
+    │   └── ...
+    ├── {space_name_2}/       # Another user space
+    └── ...
+```
+
+### Other Important Directories
+
+```
+uploads/                      # User uploaded files
+site_backup/                  # Backup copies of original site templates
+├── {space_name}/
+│   └── index.html           # Original unprotected site template
+templates/                    # Flask HTML templates
+static/                       # Flask static assets (CSS, JS, images)
+markdown/                     # Markdown content files
+```
+
+### Benefits of This Structure
+
+- **🐳 Docker-Friendly**: All persistent data is contained in the `data/` directory, making it easy to mount as a single Docker volume
+- **📦 Clean Separation**: Source templates (`data/site/`) are separate from user-generated content (`data/sites/`)
+- **💾 Easy Backup**: Single directory contains all important application data
+- **🔄 Version Control**: Only application code is tracked in git, not generated content
+- **🚀 Scalable**: Clear organization supports multiple user spaces and easy deployment
+
+### Site Generation Flow
+
+1. **Template Download**: Latest site template is downloaded to `data/site/` from GitHub
+2. **Site Building**: Template is built using Node.js/Yarn, output goes to `data/site/dist/`
+3. **Space Creation**: Built files are copied to `data/sites/{space_name}/` for each user
+4. **Password Protection**: Sites are protected using StaticCrypt and served from `data/sites/`
+5. **Web Serving**: Flask serves user sites from `data/sites/` via `/sites/{space_name}/` URLs
+
 
 ## More details
 
@@ -123,10 +175,23 @@ permanent location.
 Use Docker to deploy this application. The included `Dockerfile` will build an image
 with the application and all dependencies installed.
 
+### Docker Volume Mounting
+
+For persistent data storage, mount the `data/` directory as a volume:
+
+```bash
+docker run -v /host/path/to/data:/app/data -p 8000:8000 your-image-name
+```
+
+This ensures that:
+- User databases persist across container restarts
+- Generated user sites are preserved
+- Site templates are cached and don't need to be re-downloaded
+
 We also include a `captain-definition` file for use with [Caprover](https://caprover.com/). This
 file will automatically deploy the application to your Caprover instance.
 
-**Note:** You will need to set the environment variables in your Caprover instance.
+**Note:** You will need to set the environment variables in your Caprover instance and configure persistent volumes for the `data/` directory.
 
 ## Contributing
 

@@ -35,8 +35,8 @@ endif
 SAFE_GIT_BRANCH := $(subst /,-,$(GIT_BRANCH))
 SAFE_GIT_BRANCH := $(shell echo $(SAFE_GIT_BRANCH) | tr '[:upper:]' '[:lower:]')
 CONTAINER_NAME := $(shell basename $(PWD) | tr '[:upper:]' '[:lower:]')
-PORT_MAPPING := 8080:8080
-VOLUME_DATA := sage-open-webui:/app/backend/data
+PORT_MAPPING := 8000:8000
+VOLUME_DATA := $$(pwd)/data:/app/data
 ENV_FILE := $$(pwd)/.env:/app/.env
 FRONTEND_SRC := $$(pwd)/app/src/:/app/src/
 BACKEND_SRC := $$(pwd)/app/backend/:/app/backend/
@@ -198,35 +198,6 @@ create-manifest-ghcr: build-amd64-ghcr build-arm64-ghcr
 		$(GHCR_IMAGE_NAME):arm64-latest
 	docker manifest push $(GHCR_IMAGE_NAME):latest
 
-# Bring down container instances on each SAGE_HOST
-it_down_sage_hosts:
-	@echo "Bringing down instances on SAGE_HOSTS from .env file..."
-	@if [ -f .env ]; then \
-		grep -E "^SAGE_HOSTS=" .env | cut -d '=' -f2 | tr ',' '\n' | while read host; do \
-			echo "Stopping containers on $$host..."; \
-			ssh "$$host" "docker stop $$(docker ps -aqf 'name=sage*') && docker rm $$(docker ps -aqf 'name=sage*')" || echo "Failed to stop containers on $$host"; \
-		done; \
-	else \
-		echo ".env file not found. Cannot read SAGE_HOSTS."; \
-		exit 1; \
-	fi
-
-# Check for running Sage instances on each SAGE_HOST
-it_check_sage_hosts:
-	@echo "Checking for running Sage instances on SAGE_HOSTS from .env file..."
-	@if [ -f .env ]; then \
-		echo "Host                 | Container ID    | Name             | Image                | Status           | Created"; \
-		echo "-------------------- | --------------- | ---------------- | -------------------- | ---------------- | ---------------"; \
-		grep -E "^SAGE_HOSTS=" .env | cut -d '=' -f2 | tr ',' '\n' | while read host; do \
-			echo "$$host:"; \
-			ssh "$$host" "docker ps --format '{{.ID}} | {{.Names}} | {{.Image}} | {{.Status}} | {{.CreatedAt}}' -f 'name=sage*'" || echo "   Failed to connect to $$host"; \
-			echo ""; \
-		done; \
-	else \
-		echo ".env file not found. Cannot read SAGE_HOSTS."; \
-		exit 1; \
-	fi
-
 # Main multi-arch build targets
 it_build_multi_arch_push_docker_hub: clean-manifests-dockerhub create-manifest-dockerhub
 	@echo "Completed Docker Hub multi-arch build and push for version $(IMAGE_TAG)"
@@ -288,21 +259,5 @@ hotfix_finish:
 things_clean:
 	git clean --exclude=!.env -Xdf
 
-
 it_deploy:
 	caprover deploy --default
-
-it_start:
-	docker start $(CONTAINER_NAME)
-
-it_start_and_build: it_build
-	docker start $(CONTAINER_NAME)
-
-it_update:
-	@echo "Updating LLM models and rebuilding container..."
-	@chmod +x update_ollama_models.sh
-	@./update_ollama_models.sh
-	@git pull
-	docker stop $(CONTAINER_NAME) || true
-	@make it_build
-	@make it_run

@@ -41,6 +41,11 @@ RUN npm install -g staticrypt
 # copy all content from the local files to the image
 COPY . /app
 
+# Create data directory with proper permissions and ensure the app user owns it
+RUN mkdir -p /app/data/sites /app/uploads /app/site_backup && \
+    chmod 755 /app/data /app/data/sites /app/uploads /app/site_backup && \
+    chmod 666 /app/sites.csv || touch /app/sites.csv && chmod 666 /app/sites.csv
+
 EXPOSE 8000
 
 # Run our CMD within the virtual environment
