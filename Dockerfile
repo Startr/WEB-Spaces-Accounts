@@ -38,7 +38,7 @@ RUN pipenv install
 
 RUN npm install -g staticrypt
 
-# copy every content from the local file to the image
+# copy all content from the local files to the image
 COPY . /app
 
 EXPOSE 8000
