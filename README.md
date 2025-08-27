@@ -2,7 +2,7 @@
 
 # Startr Spaces Web Accounts  -  Built with Startr/WEB-Flask
 
-v0.0.1
+v0.0.3
 
 # Startr Spaces Web Accounts
 
