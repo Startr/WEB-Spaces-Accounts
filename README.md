@@ -6,15 +6,7 @@ v0.0.1
 
 # Startr Spaces Web Accounts
 
-Build with Startr/WEB-Flask
-
-Building with Startr/WEB-Flask you can turn your ideas into a solid Minimal Viable Product in less than a weekend.
-
-With a little Python code you can tweak our micro framework to do anything.
-
-A simple yet powerful web application built with Flask and sprinkled with love... and a little magic ✨
-
-🌟🌟🌟 Please **fork** and leave a ⭐ star if you find this repo useful. Thank you! 🌟🌟🌟
+Built with Startr/WEB-Flask
 
 ## Introduction
 
@@ -30,30 +22,37 @@ Note: To keep things simple we are using the built in Flask server. For producti
 1. Setup your environment variables in `.env` file. You can use the `.env.example` file as a template.
 2. Setup your pipevn environment `pipenv install`
 3. Activate your pipevn environment `pipenv shell` or if you have autoenv installed `cd ../
-4. Run the app locally using `python app.py`. The application will be accessible at `http://localhost:8000` during development.
+4. Run the app locally using `pipenv run python app.py`. The application will be accessible at `http://localhost:8000` during development.
 
 ## License
 
 We license our projects under the [AGPL-3.0](https://choosealicense.com/licenses/agpl-3.0/) license. This license allows you to use, modify, and distribute this work, as long as you give us credit and share any changes you make under the same license. Share your changes by opening a pull request.
 
-## WEB-Flask Includes 🛠️
+##  Includes 🛠️
+
+## Includes 🛠️
 
 Here's what you'll find in this awesome project:
 
-- ✨ Quick Site with super smooth page transitions
-- 🔐 User authentication
-- 👥 Members only page logic
-- 🎯 Pro members only page logic
-- 📝 Contact form
-- 📂 File upload
+> **Note:** To access the links, you must be running the development server on your local machine at `127.0.0.1:8000`.
+
+- ✨ [Quick Site](http://127.0.0.1:8000/) with super smooth page transitions
+- 🔐 [User Authentication](http://127.0.0.1:8000/login/)
+- 👥 [Members Only Page Logic](http://127.0.0.1:8000/members/)
+- 🎯 [Pro Members Only Page Logic](http://127.0.0.1:8000/pro-members/)
+- 📝 [Contact Form](http://127.0.0.1:8000/contact/)
+- 📂 [File Upload](http://127.0.0.1:8000/upload/)
 - 💵 Billing
-  - 💳 Stripe integration
-  - 🔄 Subscriptions
-- 📊 User dashboard
-- 👩‍💼 User roles
-- 🔑 Login
-- 🔒 Logout
-- 📝 User registration
+  - 💳 [Stripe Integration](http://127.0.0.1:8000/billing/stripe/)
+  - 🔄 [Subscriptions](http://127.0.0.1:8000/billing/subscriptions/)
+- 📊 [User Dashboard](http://127.0.0.1:8000/dashboard/)
+- 👩‍💼 [User Roles](http://127.0.0.1:8000/user-roles/)
+- 🔑 [Login](http://127.0.0.1:8000/login/)
+- 🔒 [Logout](http://127.0.0.1:8000/logout/)
+- 📝 [User Registration](http://127.0.0.1:8000/register/)
+
+Each link provides a direct path to the corresponding feature, ensuring you can explore and interact with the components seamlessly.
+
 
 ## More details
 
