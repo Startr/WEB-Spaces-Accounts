@@ -38,8 +38,13 @@ RUN pipenv install
 
 RUN npm install -g staticrypt
 
-# copy every content from the local file to the image
+# copy all content from the local files to the image
 COPY . /app
+
+# Create data directory with proper permissions and ensure the app user owns it
+RUN mkdir -p /app/data/sites /app/uploads /app/site_backup && \
+    chmod 755 /app/data /app/data/sites /app/uploads /app/site_backup && \
+    chmod 666 /app/sites.csv || touch /app/sites.csv && chmod 666 /app/sites.csv
 
 EXPOSE 8000
 

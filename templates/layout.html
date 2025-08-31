@@ -51,13 +51,13 @@
 
     {% endblock %}
   </head>
-  <body class="invisible" style="--d: flex; --fd: column; --minh: 100vh">
+  <body class="invisible" style="--m:auto; --d: flex; --fd: column; --minh: 100vh">
     <nav
       aria-label="main navigation"
       class="navbar row"
       style="--d: none; --d-md: flex; --ta: center; --jc: space-between"
     >
-      <h3 class="column">
+      <h3 class="column" style="--m:0">
         <a href="/">
           <img
           alt="The Startr Instant Spaces Logo"
@@ -70,10 +70,10 @@
         {% if session._user_id %}
         <a href="/dashboard">⑈</a> - <a href="/free">Manage Your Space</a> - {%
         else %} <a href="/">Home</a> - {% endif %}<!-- -->
-        <a href="/s/about">About</a> - <a href="/s/contact">Contact</a> - {#}only
+        <a href="/s/about">About</a> - <a href="/s/contact">Contact</a>  {#}only
         show these links if the user is not logged in {#} {% if not
         session._user_id %}
-        <a href="/register"><button>Register and Setup Your Space</button></a> -
+        <a href="/register">&nbsp;<button>Register and Setup Your Space</button></a>
         <a href="/login">Login</a>
         {% endif %} {#} only show these links if the user is logged in {#} {% if
         session._user_id %} {# only show if the user is not a pro user #} {% if
@@ -134,7 +134,7 @@
             >.
           </p>
           <p style="--mb: 0">
-            Startr Space (c) 2023 Startr LLC,
+            Startr Space (c) 2025 Startr LLC,
             Startr Space code is
             licensed under the
             <a

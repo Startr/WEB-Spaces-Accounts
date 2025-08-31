@@ -17,17 +17,27 @@ import logging
 import requests  # for downloading the site
 
 import stripe
+import secrets
+
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # If python-dotenv is not available, environment variables should be set manually
+    pass
 
 config = {
     "DEBUG": True,  # run app in debug mode
-    "SQLALCHEMY_DATABASE_URI": "sqlite:////tmp/test.db"  # connect to database
+    "SQLALCHEMY_DATABASE_URI": f"sqlite:///{os.path.abspath('data/app.db')}"  # connect to database
 }
 
 site_db = 'sites.csv'
 
 app = Flask(__name__, static_url_path='')
 
-app.secret_key = os.getenv("FLASK_SECRET_KEY")
+# Set secret key with fallback
+app.secret_key = os.getenv("FLASK_SECRET_KEY") or secrets.token_hex(32)
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
@@ -40,6 +50,12 @@ db = SQLAlchemy(app)
 
 if not os.path.exists('uploads'):
     os.makedirs('uploads')
+
+if not os.path.exists('data'):
+    os.makedirs('data')
+
+if not os.path.exists('data/sites'):
+    os.makedirs('data/sites')
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -230,27 +246,27 @@ def upgrade():
 # TODO: check the version of the site and only download if it's not the latest
 # https://gist.github.com/opencoca/afc180377b5b4aaf475da852042987ab
 def download_and_extract_site():
-    latest_site_version = '0.0.3.1'
-    if not os.path.exists('site'):
+    latest_site_version = '0.0.5'
+    if not os.path.exists('data/site'):
         site_url = f'https://github.com/Startr/WEB-Spaces/archive/refs/tags/{latest_site_version}.zip'
         response = requests.get(site_url)
         if response.status_code == 200:
-            with open(f'{latest_site_version}.zip', 'wb') as zip_file:
+            with open(f'data/{latest_site_version}.zip', 'wb') as zip_file:
                 zip_file.write(response.content)
-            os.system(f'unzip {latest_site_version}.zip')
-            os.system(f'mv WEB-Spaces-{latest_site_version} site')
-            os.system('cd site && yarn install')
-            os.remove(f'{latest_site_version}.zip')
+            os.system(f'cd data && unzip {latest_site_version}.zip')
+            os.system(f'cd data && mv WEB-Spaces-{latest_site_version} site')
+            os.system('cd data/site && yarn install')
+            os.remove(f'data/{latest_site_version}.zip')
 
 
 def build_site():
     # TODO: build the site more quickly by only building the changed files
-    os.system('cd site && yarn build')
+    os.system('cd data/site && yarn build')
 
 
 def setup_space(space_name):
     """Setup a new space"""
-    space_folder_path = f'sites/{space_name}'
+    space_folder_path = f'data/sites/{space_name}'
     space_backup_path = f'site_backup/{space_name}'
 
     if os.path.exists(space_folder_path):
@@ -259,22 +275,22 @@ def setup_space(space_name):
     else:
         build_site()
         os.makedirs(space_folder_path)
-        logging.info(f'Created folder for {space_name} in static/sites')
-        os.system(f'cp -r site/dist/* {space_folder_path}')
-        logging.info(f'Copied site/dist contents to {space_folder_path}')
-        # Backup the site/dist/index.html file to site_backup
+        logging.info(f'Created folder for {space_name} in data/sites')
+        os.system(f'cp -r data/site/dist/* {space_folder_path}')
+        logging.info(f'Copied data/site/dist contents to {space_folder_path}')
+        # Backup the data/site/dist/index.html file to site_backup
         os.system(
             f'mkdir -p {space_backup_path} && \
-              cp -f site/dist/index.html {space_backup_path}')
-        logging.info(f'Copied site/dist/index.html to {space_backup_path}')
+              cp -f data/site/dist/index.html {space_backup_path}')
+        logging.info(f'Copied data/site/dist/index.html to {space_backup_path}')
 
 
 def delete_space(space_name):
     """Delete a space"""
-    space_folder_path = f'sites/{space_name}'
+    space_folder_path = f'data/sites/{space_name}'
     if os.path.exists(space_folder_path):
         os.system(f'rm -rf {space_folder_path}')
-        logging.info(f'Deleted folder for {space_name} in static/sites')
+        logging.info(f'Deleted folder for {space_name} in data/sites')
     else:
         logging.warning(f'Space {space_name} does not exist')
         return redirect(url_for('free?nospace', message="A Space with that name does not exist."))
@@ -287,8 +303,8 @@ def update_space_password(space_name, space_pass):
     space_pass -- the new password for the space
     """
     command = (
-        f'npm exec -- staticrypt site_backup/{space_name}/index.html -d sites/{space_name} '
-        f'-p "{space_pass}" --short -t site/password_template.html'
+        f'npm exec -- staticrypt site_backup/{space_name}/index.html -d data/sites/{space_name} '
+        f'-p "{space_pass}" --short -t data/site/password_template.html'
     )
     os.system(command)
     logging.info(f'Updated password for {space_name} using staticrypt')
@@ -388,17 +404,17 @@ def free():
 def site_builder():
     ''' 
     Checks the sites.csv file for new spaces and builds them.
-    Checks the sites/ folder for sites that are not in sites.csv and deletes them.
+    Checks the data/sites/ folder for sites that are not in sites.csv and deletes them.
     '''
     # Download the site files if we don't already have them
     download_and_extract_site()
-    # empty the sites/ folder
-    os.system('rm -rf sites/*')
+    # empty the data/sites/ folder
+    os.system('rm -rf data/sites/*')
     # Check the csv file for new spaces
     with open(site_db, 'r') as file:
         reader = csv.reader(file)
         for row in reader:
-            if not os.path.exists('sites/' + row[1]):
+            if not os.path.exists('data/sites/' + row[1]):
                 # If the space doesn't exist, set space_name and space_pass
                 # and build the space
                 space_name = row[1]
@@ -419,16 +435,16 @@ def pro_page():
 
 @app.route('/sites/<path:path>')
 def send_site(path):
-    if os.path.isdir('sites/' + path):
+    if os.path.isdir('data/sites/' + path):
         path += '/index.html'
-    return send_from_directory('sites/', path)
+    return send_from_directory('data/sites/', path)
 
 
 if __name__ == '__main__':
     if '--clean' in sys.argv:
-        os.system('rm -rf site')
-        os.system('rm -rf sites')
-    # run the site_builder on launch to make sure we have a clean sites/ folder
+        os.system('rm -rf data/site')
+        os.system('rm -rf data/sites')
+    # run the site_builder on launch to make sure we have a clean data/sites/ folder
     site_builder()
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
