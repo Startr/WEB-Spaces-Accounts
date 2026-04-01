@@ -214,7 +214,7 @@ it_build_multi_arch_all: it_build_multi_arch_push_docker_hub it_build_multi_arch
 show-version:
 	@echo "Current version: $(IMAGE_TAG)"
 
-.PHONY: it_build it_build_no_cache dev_run it_run it_build_n_run it_build_n_run_no_cache \
+.PHONY: release it_build it_build_no_cache dev_run it_run it_build_n_run it_build_n_run_no_cache \
 	clean-manifests-dockerhub clean-manifests-ghcr \
 	build-amd64-dockerhub build-arm64-dockerhub \
 	build-amd64-ghcr build-arm64-ghcr \
@@ -268,3 +268,9 @@ things_clean:
 
 it_deploy:
 	caprover deploy --default
+
+# ---------------------------------------------------------------------------
+# Interactive release (full flow via ~/bin/git-release)
+# ---------------------------------------------------------------------------
+release:
+	@scripts/release.sh
