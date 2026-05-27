@@ -1,0 +1,40 @@
+# Hidden-artifact allowlist: deny dotfiles and dotfolders everywhere in the
+# build context unless they are intentionally needed inside the image.
+.*
+
+# Project-specific runtime data (created inside the container; never bake in)
+sites/
+site_backup/
+data/
+
+# Python build & runtime junk
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+MANIFEST
+build/
+dist/
+venv/
+env/
+ENV/
+
+# Django runtime
+db.sqlite3
+db.sqlite3-journal
+local_settings.py
+*.log
+
+# Test / coverage
+htmlcov/
+coverage.xml
+
+# Translations
+*.mo
+
+# Repo metadata (not needed inside the image)
+README.md
+Makefile
+docker-compose.yml
