@@ -270,7 +270,8 @@ it_deploy:
 	caprover deploy --default
 
 # ---------------------------------------------------------------------------
-# Interactive release (full flow via ~/bin/git-release)
+# Interactive release: git-release from the sage-is/apps tap
 # ---------------------------------------------------------------------------
 release:
-	@scripts/release.sh
+	@command -v git-release >/dev/null || { echo "Needs git-release: brew tap sage-is/apps && brew trust --tap sage-is/apps && brew install git-release"; exit 1; }
+	@git-release
