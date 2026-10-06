@@ -100,7 +100,8 @@ build_slim:
 	# Note at the moment manual use of the site is required to build the slim version
 	# we need to add selenium automation to the build process to automate this
 	# see https://github.com/slimtoolkit/slim
-	slim build --http-probe  --include-path /app/backend --include-path /app/static --continue-after=160  $(IMAGE_NAME)
+	@# slim reads DOCKER_HOST, not docker's context: Colima has no /var/run/docker.sock.
+	DOCKER_HOST=$$(docker context inspect -f '{{.Endpoints.docker.Host}}') slim build --http-probe  --include-path /app/backend --include-path /app/static --continue-after=160  $(IMAGE_NAME)
 
 it_run_slim:
 	# Run the slim version of the image
